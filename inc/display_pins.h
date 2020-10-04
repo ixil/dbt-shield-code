@@ -5,7 +5,7 @@
 #define DISPLAY_DRIVER "ILI9341"
 
 
-#define DISPLAY_PIN( PIN_NAME, PIN_N ) define DISPLAY_PIN_ ## PIN_NAME (PIN_N)
+#define DISPLAY_PIN( PIN_NAME, PIN_N ) define DISPLAY_PIN_##PIN_NAME (PIN_N)
 // #ifndef MISO
 // #define MISO 52
 // #endif

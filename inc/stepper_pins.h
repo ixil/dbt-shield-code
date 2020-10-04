@@ -1,7 +1,7 @@
 #ifndef STEPPER_PINS_H
 #define STEPPER_PINS_H
 
-#define STEPPER_PIN( PIN_NAME, PIN_N ) define STEP ## PIN_NAME (PIN_N)
+#define STEPPER_PIN( PIN_NAME, PIN_N ) define STEP##PIN_NAME (PIN_N)
 #ifndef MISO
 #define MISO 52
 #endif
@@ -37,5 +37,19 @@ STEPPER_PIN(1_SI, MOSI)
 STEPPER_PIN(1_CK, SCK)
 STEPPER_PIN(1_CS, STEP1_CS)
 STEPPER_PIN(1_EN, STEP1_EN)
+
+    void setupStepperPins() {
+        pinMode(STEP0_SO,  INPUT);
+        pinMode(STEP0_CS,  OUTPUT);
+        pinMode(STEP0_SI,  OUTPUT);
+        pinMode(STEP0_SCK, OUTPUT);
+        pinMode(STEP0_EN,  OUTPUT);
+
+        pinMode(STEP1_SO,  INPUT);
+        pinMode(STEP1_CS,  OUTPUT);
+        pinMode(STEP1_SI,  OUTPUT);
+        pinMode(STEP1_SCK, OUTPUT);
+        pinMode(STEP1_EN,  OUTPUT);
+    }
 
 #endif /* STEPPER_PINS_H */
