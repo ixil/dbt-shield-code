@@ -1,12 +1,16 @@
-#include <stepper.h>
-#include <fast
+#include "stepper.h"
 
 #include <AccelStepper.h>
-AccelStepper stepper = AccelStepper(stepper.DRIVER, STEP_PIN, DIR_PIN);
-st.setMaxSpeed(spmm*maxspeed);
-st.setAcceleration(spmm*maxaccel);
+//AccelStepper stepper = AccelStepper(stepper.DRIVER, STEP_PIN, DIR_PIN);
+//st.setMaxSpeed(spmm*maxspeed);
+//st.setAcceleration(spmm*maxaccel);
 
-shaft = true; // Direction of motor
+bool shaft = true; // Direction of motor
+unsigned long last_micro = 0;
+unsigned long last_time = 0;
+unsigned long currentMillis;
+unsigned long currentMicros;
+uint32_t drv_status[] = {0, 0};
 
 // Using direct register manipulation can reach faster stepping times
 #define STEP_PORT     PORTF // Match with STEP_PIN
@@ -22,10 +26,10 @@ void setup() {
   setupStepperPins(); // Make stepper pins Outputs
 
   // Steppers are active low
-  digitalWrite(STEP0_EN, HIGH);
-  digitalWrite(STEP1_EN, HIGH);
+  digitalWrite(STEPPER_0_EN, HIGH);
+  digitalWrite(STEPPER_1_EN, HIGH);
 
-  Serial.begin(250000);
+  Serial.begin(115200);
   while(!Serial);
   Serial.println("\nStart...");
 
@@ -40,48 +44,54 @@ void setup() {
   /*   cli();//stop interrupts */
   /*   sei();//allow interrupts */
   /* } */
-}
+  digitalWrite(STEPPER_0_EN, LOW);
+  digitalWrite(STEPPER_1_EN, LOW);
+  last_time = millis();
+  last_micro = micros();
+  delay(2000);
 
+  // Serial control
+  // Print out Diagnostics
 }
 
 void loop() {
-  unsigned long currentMicros;
-  currentMicros = micros();
-
-  // Serial control
-  /* // Print out Diagnostics */
-  /* while(Serial.available() > 0) { */
-  /*   int8_t read_byte = Serial.read(); */
-  /*   if (read_byte == '0')      { digitalWrite( EN_PIN, HIGH ); } */
-  /*   else if (read_byte == '1') { digitalWrite( EN_PIN,  LOW ); } */
-  /*   else if (read_byte == '+') { if (OCR1A > MAX_SPEED) OCR1A -= 20; } */
-  /*   else if (read_byte == '-') { if (OCR1A < MIN_SPEED) OCR1A += 20; } */
-  /* } */
+  currentMicros = micros(); currentMillis = millis();
+  /* Serial.print("."); */
 
 
-  delay(1000);
-  dir = !dir;
-  driver.shaft(dir);
+  if((currentMillis - last_time) > 5000) { //run every 0.1s
+    /* drv_status[0] = STEPPER0.DRV_STATUS(); */
+    /* drv_status[1] = STEPPER1.DRV_STATUS(); */
+    Serial.println("\nlets reverse...");
+    shaft = !shaft;
+    STEPPER0.shaft(shaft);
+    STEPPER1.shaft(shaft);
+    digitalWrite(STEPPER_0_EN, HIGH);
+    digitalWrite(STEPPER_1_EN, HIGH);
+    delay(1000);
+    digitalWrite(STEPPER_0_EN, LOW);
+    digitalWrite(STEPPER_1_EN, LOW);
+    delayMicroseconds(10);
+    last_time = millis();
+    /* if((currentMicros- last_time) > 100) { //run every 0.1s */
+    /*   last_time = ms; */
+    /*   for (const int i_step=0; i_step <2; ++i_step; ) { */
+    /*     Serial.print("%d ", i); */
+    /*     Serial.print(drv_status[i_step].sg_result, DEC); */
+    /*     Serial.print(" "); */
+    /*     Serial.println(steppers[i_step].cs2rms(drv_status[i_step].cs_actual), DEC); */
+    /*   } */
 
-  if((ms-last_time) > 100) { //run every 0.1s
-    last_time = ms;
-
-    DRV_STATUS_t drv_status[] = {0, 0};
-    drv_status[0].sr = STEPPER0.DRV_STATUS();
-    drv_status[1].sr = STEPPER1.DRV_STATUS();
-
-    for (const int i_step=0; i_step <2; ++i_step; ) {
-      Serial.print("%d ", i);
-      Serial.print(drv_status[i_step].sg_result, DEC);
-      Serial.print(" ");
-      Serial.println(steppers[i_step].cs2rms(drv_status[i_step].cs_actual), DEC);
     }
+
+
+  /* elapsedMicros = currentMicros - nextMicros;  */
+  if (micros() - currentMicros >= 100){
+    digitalWrite(STEPPER_0_STP, HIGH);
+    digitalWrite(STEPPER_1_STP, HIGH);
+    delayMicroseconds(3);
+    digitalWrite(STEPPER_0_STP, LOW);
+    digitalWrite(STEPPER_1_STP, LOW);
   }
-
-/* elapsedMicros = currentMicros - nextMicros;  */
-/* if (elapsedMicros >= duration){ */
-/* nextMicros = nextMicros + duration;
-
-  } // end time check
-} // end loop
 }
+

@@ -1,12 +1,15 @@
 // http://www.gammon.com.au/interrupts
 // http://www.gammon.com.au/timers
-// Currently just copy and paste of useful ISR stuff
 
 
-const byte adcPin = 0;
 volatile int adcReading;
 volatile boolean adcDone;
 boolean adcStarted;
+float lastTempReading;
+float lastTempReading;
+
+#include "TemperatureSensing.h"
+
 
 void setup ()
 {
@@ -33,9 +36,10 @@ ISR (ADC_vect)
   adcReading = (high << 8) | low;
   adcDone = true;  
   }  // end of ADC_vect
-  
+
 void loop ()
 {
+  readbyte
   // if last reading finished, process it
   if (adcDone)
     {
@@ -48,13 +52,6 @@ void loop ()
     adcDone = false;
     }
     
-  // if we aren't taking a reading, start a new one
-  if (!adcStarted)
-    {
-    adcStarted = true;
-    // start the conversion
-    ADCSRA |= bit (ADSC) | bit (ADIE);
-    }    
   
   // do other stuff here
 

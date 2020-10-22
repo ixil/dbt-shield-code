@@ -3,12 +3,12 @@
 #include <Arduino.h>
 
 // Stepper enable and Chip select pins
-#define STEPPER_0_CS      (D13)
-#define STEPPER_0_EN      (D12)
-#define STEPPER_0_STP     (D23)
-#define STEPPER_1_CS      (D13)
-#define STEPPER_1_EN      (D10)
-#define STEPPER_1_STP     (D25)
+#define STEPPER_0_CS      (13)
+#define STEPPER_0_EN      (12)
+#define STEPPER_0_STP     (23)
+#define STEPPER_1_CS      (13)
+#define STEPPER_1_EN      (10)
+#define STEPPER_1_STP     (25)
 
 // Sense Resistor value
 #ifndef STEPPER_R_SENSE
