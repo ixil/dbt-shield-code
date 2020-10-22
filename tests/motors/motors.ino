@@ -62,11 +62,11 @@ void loop() {
     shaft = !shaft;
     STEPPER0.shaft(shaft);
     STEPPER1.shaft(shaft);
-    digitalWrite(STEPPER_0_EN, LOW);
-    digitalWrite(STEPPER_1_EN, LOW);
-    delay(1000);
     digitalWrite(STEPPER_0_EN, HIGH);
     digitalWrite(STEPPER_1_EN, HIGH);
+    delay(1000);
+    digitalWrite(STEPPER_0_EN, LOW);
+    digitalWrite(STEPPER_1_EN, LOW);
     delayMicroseconds(10);
     last_time = millis();
     /* if((currentMicros- last_time) > 100) { //run every 0.1s */
@@ -82,10 +82,10 @@ void loop() {
 
 
   /* elapsedMicros = currentMicros - nextMicros;  */
-  if (micros() - currentMicros >= 100){
+  if (micros() - currentMicros >= 10){
     digitalWrite(STEPPER_0_STP, HIGH);
     digitalWrite(STEPPER_1_STP, HIGH);
-    delayMicroseconds(3);
+    delayMicroseconds(10);
     digitalWrite(STEPPER_0_STP, LOW);
     digitalWrite(STEPPER_1_STP, LOW);
   }
