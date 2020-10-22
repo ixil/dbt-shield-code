@@ -1,9 +1,5 @@
 #include "stepper.h"
 
-#include <AccelStepper.h>
-//AccelStepper stepper = AccelStepper(stepper.DRIVER, STEP_PIN, DIR_PIN);
-//st.setMaxSpeed(spmm*maxspeed);
-//st.setAcceleration(spmm*maxaccel);
 
 bool shaft = true; // Direction of motor
 unsigned long last_micro = 0;
@@ -66,11 +62,11 @@ void loop() {
     shaft = !shaft;
     STEPPER0.shaft(shaft);
     STEPPER1.shaft(shaft);
-    digitalWrite(STEPPER_0_EN, HIGH);
-    digitalWrite(STEPPER_1_EN, HIGH);
-    delay(1000);
     digitalWrite(STEPPER_0_EN, LOW);
     digitalWrite(STEPPER_1_EN, LOW);
+    delay(1000);
+    digitalWrite(STEPPER_0_EN, HIGH);
+    digitalWrite(STEPPER_1_EN, HIGH);
     delayMicroseconds(10);
     last_time = millis();
     /* if((currentMicros- last_time) > 100) { //run every 0.1s */
