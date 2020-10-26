@@ -17,6 +17,7 @@ __attribute__((noinline))  static void setADCInterruptHandler(const InterruptHan
         Serial.print((uint16_t)(callback));
       } else {
         Serial.print("Callback is NULL!");
+        Serial.flush();
         while(true);
       }
     };

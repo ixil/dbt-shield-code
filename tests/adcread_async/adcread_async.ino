@@ -2,12 +2,10 @@
 #include "Thermistor.h"
 
 
-volatile bool WDTCRAZY=false;
 volatile bool blink = false;
 /* ISR(ADC_vect){ ADCAveragingFilter::ADCAveragingFilter(); }; */
 ISR(ADC_vect){ InterruptGlobals::ADCInterrupt(); };
 ISR(__vector_default){blink=true; digitalWrite(LED_BUILTIN, HIGH);};
-ISR(WDT_vect){WDTCRAZY=true;}
 Thermistor thermistor(1);
 
 void setup () {
@@ -33,11 +31,6 @@ void setup () {
   Serial.print((uint16_t)InterruptGlobals::ADCInterrupt);
   Serial.flush();
 
-  if (WDTCRAZY){
-    Serial.println("WATCHDOG INTERRUPTED");
-    Serial.flush();
-    while(true);
-  }
   sei();
   Serial.println("reenabling interrupts");
   Serial.flush();
@@ -50,7 +43,7 @@ void update(){
 
 void loop () {
   // do something with the reading, for example, print it
-  Serial.print("ADC int address is: ");
+  Serial.print("startloop, address: ");
   Serial.print((uint16_t)InterruptGlobals::ADCInterrupt);
   blink = blink ? false : false;
   float temperature;

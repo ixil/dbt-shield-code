@@ -34,7 +34,7 @@ void ADCAveragingFilter::init() {
     isActive = false;
     // analogReference(EXTERNAL);
     ADCSRA = bit(ADEN); // turn on the ADC
-    ADMUX =  bit(REFS0); //AVcc
+    ADMUX = bit(REFS0); //AVcc
     // ADMUX =  bit(REFS1); //AVext
     ADMUX |= (pinNo & 0x07); // Select ADC MUX pin and set AREF
 }
@@ -79,10 +79,10 @@ ADCStatus ADCAveragingFilter::getFilteredValue(uint12_t &averagedDecimatedValue)
 // Call this (in an ISR) to put a new reading into the filter
 void ADCAveragingFilter::AveragingISRHandler() {
     const uint16_t r = readADC();
-        (*instance).sum += r - instance->readings[instance->idx];
-        instance->readings[instance->idx] = r;
-        ++(instance->idx);
-    if (instance->idx = FilterLength) {
+        (*instance).sum += r - (*instance).readings[instance->idx];
+        (*instance).readings[instance->idx] = r;
+        (*instance).idx += 1;
+    if (instance->idx == FilterLength) {
         instance->idx = 0;
         instance->isValid = true;
     }
@@ -97,7 +97,6 @@ void ADCAveragingFilter::setSingleShotMode(const ADCPreScaler_t prescale) {
     if (!instance){
         Serial.println("instance not set corretly!");
         Serial.flush();
-        while(true);
     }
     // ADCSRA |= bit(ADIE) | bit(ADEN) | logPrescale(prescale);
     ADCSRA &= ~bit(ADATE);
