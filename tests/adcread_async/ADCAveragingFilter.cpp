@@ -60,12 +60,16 @@ ADCAveragingFilter::~ADCAveragingFilter() {
 ADCStatus ADCAveragingFilter::getFilteredValue(uint12_t &averagedDecimatedValue) {
     if (isValid) {
         isValid = false;
-        Serial.print("decimating: ");
+        Serial.print(" decimating: ");
         Serial.print(getSum());
-        Serial.print("samples ");
+        Serial.print(" averaging using ");
         Serial.print(ADCAveragingFilter::AveragingSamples);
-        Serial.print(" and bits ");
+        Serial.print(" oversamples ");
+        Serial.print(ADCAveragingFilter::OverSampler);
+        Serial.print("  bits ");
         Serial.print(ADCAveragingFilter::ThermistorOverSampleBits);
+        Serial.print(" Total samples: ");
+        Serial.print(ADCAveragingFilter::FilterLength);
         averagedDecimatedValue = (getSum() / ADCAveragingFilter::AveragingSamples) >> ADCAveragingFilter::ThermistorOverSampleBits;
         return ADCStatus::Success;
     } else {
@@ -104,7 +108,7 @@ inline constexpr uint8_t logPrescale(const ADCPreScaler_t prescale){
 void ADCAveragingFilter::setSingleShotMode(const ADCPreScaler_t prescale) {
     isActive = true;
     if (!instance){
-        Serial.println("instance not set corretly!");
+        Serial.println("instance not set correctly!");
         Serial.flush();
     }
     // ADCSRA |= bit(ADIE) | bit(ADEN) | logPrescale(prescale);
@@ -136,7 +140,7 @@ void ADCAveragingFilter::setupTriggeredADC(const ADCTriggerSource source, const 
             isActive = false;
     }
     if (!instance){
-        Serial.print("instance not set corretly!");
+        Serial.print("instance not set correctly!");
         abort();
     }
     ADCSRB = (0x07 & static_cast<uint8_t>(source));

@@ -6,8 +6,6 @@
 #include "ADCAveragingFilter.h"
 
 namespace Globals {
-    constexpr auto ThermistorOverSampleBits = 1;
-    constexpr auto ThermistorFilterLength = 4<<2*ThermistorOverSampleBits;
     constexpr auto ThermistorExpectedLowerBound = 10.0;
     constexpr auto ThermistorExpectedUpperBound = 320.0;
     constexpr auto ADCSampleBits = 10;
@@ -19,6 +17,7 @@ enum class TemperatureStatus{
     Success,
     NotReady,
     OpenCircuit,
+    ShortCircuit,
     Error
 };
 
@@ -36,7 +35,8 @@ class Thermistor {
         const double R25 = 100000;
         //Steinhart-Hardt parameters
         const double shhC = 7.068e-8;
-        const int shBeta = 4725;
+        // const int shBeta = 4267;
+        const int shBeta = 4725; //E3D
         const double shhB = 1.0/shBeta;
         double shhA; //Derived from shhB and shhC
 

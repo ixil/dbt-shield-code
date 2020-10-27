@@ -9,15 +9,17 @@ void setup () {
 
   Serial.begin(230400);
   Serial.println();
-  cli();
   pinMode(A1, OUTPUT);
+  pinMode(A0, INPUT);
+  digitalWrite(A1, HIGH);
+  cli();
   for (int i=0; i<9; ++i){
     pinMode(i, OUTPUT);
     digitalWrite(i, LOW);
   }
-  digitalWrite(A1, HIGH);
   thermistor.init();
   sei();
+  delay(100);
 }  // end of setup
 
 
@@ -39,9 +41,13 @@ void loop () {
       Serial.print(temperature); Serial.println("C.");
       Serial.print(" Open circuit!");
       break;
+    case TemperatureStatus::ShortCircuit:
+      Serial.print(temperature); Serial.println("C.");
+      Serial.print(" Short circuit!");
+      break;
     default:
       Serial.print(temperature); Serial.println("C.");
-      Serial.print(" Some type of error!");
+      Serial.print(" Some other type of error!");
       break;
   };
   Serial.flush();

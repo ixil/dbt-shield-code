@@ -38,7 +38,9 @@ class ADCAveragingFilter {
         // 4^2 samples used for Oversampling and Decimation, and 4 samples used for averaging them
         inline static constexpr uint8_t ThermistorOverSampleBits = 2;
         inline static constexpr uint8_t AveragingSamples = 4;
-        inline static constexpr uint8_t FilterLength = AveragingSamples * 4 << 2*(ThermistorOverSampleBits-1) ;
+        // Oversample 4^n , where n is the number of extra bits
+        inline static constexpr uint8_t OverSampler = (ThermistorOverSampleBits > 0) ? (1 << (2<<(ThermistorOverSampleBits - 1))) : 1;
+        inline static constexpr uint8_t FilterLength = AveragingSamples * OverSampler;
 
     private:
         ADCPin_t pinNo;

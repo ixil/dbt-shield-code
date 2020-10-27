@@ -3,8 +3,6 @@
 #include "math.h"
 
 Thermistor::Thermistor(const ADCPin_t pinNo) : filter(pinNo, (1<<Globals::ADCSampleBits)-1){
-  // filter = ADCAveragingFilter(pinNo, (1<<Globals::ADCSampleBits)-1);
-  // filter{pinNo, (1<<Globals::ADCSampleBits)-1};
   const double lnR25 = log(R25);
   shhA = 1.0/(25.0 - ABS_ZERO) - shhB * lnR25 - shhC * lnR25 * lnR25 * lnR25;
 }
@@ -38,12 +36,21 @@ TemperatureStatus Thermistor::readTemperature(double& temperature){
       return TemperatureStatus::Error;
       break;
   }
-  const int16_t Vref = (1<<13) - 1; // Max 12 bit number, 5V
+  // Max Vin could be
+  const int16_t Vref = (1<<(Globals::ADCSampleBits + ADCAveragingFilter::ThermistorOverSampleBits)) - 1;
+  Serial.print(" Vref: ");
+  Serial.print(Vref);
+  Serial.print("v, Vin: ");
+  Serial.println((int16_t)Vin);
+  Serial.println("v");
   const double denom = (double)(Vref - (int16_t)Vin);
-  Serial.println(denom);
+  if (Vin == 0){
+    Serial.println(" Vin is 0.0 ");
+    return TemperatureStatus::ShortCircuit;
 
+  }
   if (denom <= 0.0) {
-    temperature = ABS_ZERO;
+    temperature = ErrorBadTemp;
     return TemperatureStatus::OpenCircuit;
   }
   const double resistance  =  Rseries * ((double)(Vin) / denom);
