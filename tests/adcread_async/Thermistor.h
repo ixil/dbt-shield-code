@@ -27,17 +27,18 @@ class Thermistor {
     private:
         using ADCPin_t = ADCAveragingFilter::ADCPin_t;
         ADCAveragingFilter filter;
+        inline static constexpr double ErrorBadTemp = 99999.99;
 
-        const float Rseries = 1e5;
+        const float Rseries = 10000;
 
         // Semitech 104NT-4-R025H42G (recommend B4267)
         // Beta and C taken from https://wiki.e3d-online.com/E3D-v6_Assembly#Configure_Firmware_.28Easy.21.29
-        // const uint16_t ParamBeta = 4725;
-        const float R25 = 1e5;
+        const double R25 = 100000;
         //Steinhart-Hardt parameters
-        const float shhC = 7.068e-8;
-        const float shhB = 1.0/4725;
-        float shhA; //Derived
+        const double shhC = 7.068e-8;
+        const int shBeta = 4725;
+        const double shhB = 1.0/shBeta;
+        double shhA; //Derived from shhB and shhC
 
     public:
         Thermistor(const ADCPin_t pinNo);
@@ -45,7 +46,7 @@ class Thermistor {
 
         void init();
         void run();
-        TemperatureStatus readTemperature(float& temperature);
+        TemperatureStatus readTemperature(double& temperature);
 };
 
 #endif /* THERMISTOR_H */

@@ -27,7 +27,7 @@ void update(){
 
 void loop () {
   // do something with the reading, for example, print it
-  float temperature;
+  double temperature;
   TemperatureStatus tstat = thermistor.readTemperature(temperature);
   switch (tstat) {
     case TemperatureStatus::Success:
@@ -36,9 +36,12 @@ void loop () {
     case TemperatureStatus::NotReady:
       break;
     case TemperatureStatus::OpenCircuit:
-      Serial.print("Open circuit!");
+      Serial.print(temperature); Serial.println("C.");
+      Serial.print(" Open circuit!");
       break;
     default:
+      Serial.print(temperature); Serial.println("C.");
+      Serial.print(" Some type of error!");
       break;
   };
   Serial.flush();

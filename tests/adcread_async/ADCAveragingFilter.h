@@ -22,7 +22,9 @@ enum class ADCTriggerSource: uint8_t {
     Counter1Capture=0x7
 };
 
-/*! Prescale can be 2,4,8,16,32,64,128 */
+/*! Prescale can be 2,4,8,16,32,64,128.
+ * Note the ADC requires a 50-200kHz for max resolution.
+ * Which only means 128 can work for max res*/
 typedef uint8_t ADCPreScaler_t;
 
 
@@ -32,15 +34,15 @@ class ADCAveragingFilter {
         typedef uint8_t ADCPin_t;
         typedef uint16_t uint12_t;
 
-    public:
         // Max 10bit samples that can fit into a uint6_t is 2^6.
         // 4^2 samples used for Oversampling and Decimation, and 4 samples used for averaging them
-        static constexpr uint8_t ThermistorOverSampleBits = 2;
-        static constexpr uint8_t AveragingSamples = 4;
-        static constexpr uint8_t FilterLength = AveragingSamples * 4 << 2*(ThermistorOverSampleBits-1) ;
+        inline static constexpr uint8_t ThermistorOverSampleBits = 2;
+        inline static constexpr uint8_t AveragingSamples = 4;
+        inline static constexpr uint8_t FilterLength = AveragingSamples * 4 << 2*(ThermistorOverSampleBits-1) ;
 
-    // private:
+    private:
         ADCPin_t pinNo;
+        inline static constexpr ADCPreScaler_t PreScale = 128;
 
         bool isActive;
         volatile bool isValid;
@@ -72,9 +74,9 @@ class ADCAveragingFilter {
         static void AveragingISRHandler();
         void startConversion();
         void startClockedADC();
-        void setSingleShotMode(const ADCPreScaler_t prescale=4);
+        void setSingleShotMode(const ADCPreScaler_t prescale=PreScale);
         void setupTriggeredADC(const ADCTriggerSource source, const ADCPreScaler_t prescale, const bool interrupt=false);
-        void startFreeRunningADC(const uint8_t prescale=4);
+        void startFreeRunningADC(const uint8_t prescale=PreScale);
 
         void run();
 

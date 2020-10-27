@@ -64,7 +64,7 @@ ADCStatus ADCAveragingFilter::getFilteredValue(uint12_t &averagedDecimatedValue)
         Serial.print(getSum());
         Serial.print("samples ");
         Serial.print(ADCAveragingFilter::AveragingSamples);
-        Serial.print("and bits ");
+        Serial.print(" and bits ");
         Serial.print(ADCAveragingFilter::ThermistorOverSampleBits);
         averagedDecimatedValue = (getSum() / ADCAveragingFilter::AveragingSamples) >> ADCAveragingFilter::ThermistorOverSampleBits;
         return ADCStatus::Success;
@@ -77,8 +77,6 @@ ADCStatus ADCAveragingFilter::getFilteredValue(uint12_t &averagedDecimatedValue)
             return ADCStatus::Idle;
     }
 }
-
-
 
 // Call this (in an ISR) to put a new reading into the filter
 void ADCAveragingFilter::AveragingISRHandler() {
