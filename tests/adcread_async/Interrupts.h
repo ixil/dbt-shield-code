@@ -5,23 +5,9 @@
 
 namespace InterruptGlobals {
     typedef void (*InterruptHandler_t)(void);
-    /* static InterruptHandler_t ADCInterrupt; */
-    static void (*ADCInterrupt)(void);
+    inline InterruptHandler_t ADCInterrupt;
 
-__attribute__((noinline))  static void setADCInterruptHandler(const InterruptHandler_t callback){
-      if (callback != nullptr) {
-        ADCInterrupt = callback;
-        Serial.print("adcint is in the seter:");
-        Serial.print((uint16_t)(ADCInterrupt));
-        Serial.print("Callback is no set to:");
-        Serial.print((uint16_t)(callback));
-      } else {
-        Serial.print("Callback is NULL!");
-        Serial.flush();
-        while(true);
-      }
-    };
+__attribute__((noinline)) void setADCInterruptHandler(const InterruptHandler_t callback);
 }
-
 
 #endif /* end of include guard: INTERRUPTS_H_ABZSEOYR */

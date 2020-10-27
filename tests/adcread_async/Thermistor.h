@@ -41,7 +41,7 @@ class Thermistor {
 
     public:
         Thermistor(const ADCPin_t pinNo);
-        virtual ~Thermistor() = default;
+        virtual ~Thermistor();
 
         void init();
         void run();

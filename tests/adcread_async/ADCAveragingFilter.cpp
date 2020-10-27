@@ -16,7 +16,7 @@ __attribute__((always_inline)) bool ADCMeasuring(){
     return (ADCSRA & bit(ADSC));
 }
 
-ADCAveragingFilter::ADCAveragingFilter(const ADCPin_t pinNo, const uint16_t initVal) : pinNo(pinNo), idx{0}, isValid{false}, sum{initVal*FilterLength}{
+ADCAveragingFilter::ADCAveragingFilter(const ADCPin_t pinNo, const uint16_t initVal) : pinNo(pinNo), isValid{false}, idx{0}, sum{initVal*FilterLength}{
     ADCAveragingFilter::instance = this;
     ADCSRA &= ~(bit(ADPS0) | bit(ADPS1) | bit(ADPS2) | bit(ADIE)); // clear prescaler
     readADC();
@@ -25,17 +25,15 @@ ADCAveragingFilter::ADCAveragingFilter(const ADCPin_t pinNo, const uint16_t init
             readings[i] = initVal;
         }
     }
-};
+}
 
 void ADCAveragingFilter::init() {
-    InterruptGlobals::setADCInterruptHandler(instance->AveragingISRHandler);
-    Serial.print("set adc int to");
-    Serial.print((uint16_t)InterruptGlobals::ADCInterrupt);
+    InterruptGlobals::setADCInterruptHandler(&ADCAveragingFilter::AveragingISRHandler);
     isActive = false;
     // analogReference(EXTERNAL);
     ADCSRA = bit(ADEN); // turn on the ADC
-    ADMUX = bit(REFS0); //AVcc
-    // ADMUX =  bit(REFS1); //AVext
+    // ADMUX = bit(REFS0); //AVcc
+    ADMUX =  bit(REFS1); //AVext
     ADMUX |= (pinNo & 0x07); // Select ADC MUX pin and set AREF
 }
 
@@ -62,6 +60,12 @@ ADCAveragingFilter::~ADCAveragingFilter() {
 ADCStatus ADCAveragingFilter::getFilteredValue(uint12_t &averagedDecimatedValue) {
     if (isValid) {
         isValid = false;
+        Serial.print("decimating: ");
+        Serial.print(getSum());
+        Serial.print("samples ");
+        Serial.print(ADCAveragingFilter::AveragingSamples);
+        Serial.print("and bits ");
+        Serial.print(ADCAveragingFilter::ThermistorOverSampleBits);
         averagedDecimatedValue = (getSum() / ADCAveragingFilter::AveragingSamples) >> ADCAveragingFilter::ThermistorOverSampleBits;
         return ADCStatus::Success;
     } else {
@@ -89,7 +93,14 @@ void ADCAveragingFilter::AveragingISRHandler() {
 }
 
 inline constexpr uint8_t logPrescale(const ADCPreScaler_t prescale){
-    return 0x00 | (~(prescale & 0xF0) << 2 | ~((prescale & 0xCC)<<1) | ~((prescale & 0xAA)));
+    return 0 | (((prescale & 0xF0) !=0 ) << 2) |
+        (((prescale & 0xCC) !=0 ) << 1) |
+        ((prescale & 0xAA) !=0);
+    // uint8_t log2prescale = 0;
+    // log2prescale |= ((prescale & 0xF0) !=0 ) << 2;
+    // log2prescale |= ((prescale & 0xCC) !=0 ) << 1;
+    // log2prescale |= (prescale & 0xAA) !=0;
+    // return log2prescale;
 }
 
 void ADCAveragingFilter::setSingleShotMode(const ADCPreScaler_t prescale) {
@@ -99,9 +110,11 @@ void ADCAveragingFilter::setSingleShotMode(const ADCPreScaler_t prescale) {
         Serial.flush();
     }
     // ADCSRA |= bit(ADIE) | bit(ADEN) | logPrescale(prescale);
+
     ADCSRA &= ~bit(ADATE);
-    ADCSRA |= bit(ADEN) | logPrescale(prescale);
-    // readADC();
+    ADCSRA |= bit(ADEN) | logPrescale(prescale) | bit(ADIE);
+    // ADCSRA |= bit(ADEN) | logPrescale(prescale);
+    readADC();
 }
 
 /*! Enables Free running ADC
@@ -126,9 +139,7 @@ void ADCAveragingFilter::setupTriggeredADC(const ADCTriggerSource source, const 
     }
     if (!instance){
         Serial.print("instance not set corretly!");
-    }
-    if (instance != this){
-        Serial.print("I am not the instance?!");
+        abort();
     }
     ADCSRB = (0x07 & static_cast<uint8_t>(source));
     ADCSRA = (
@@ -152,7 +163,7 @@ uint16_t ADCAveragingFilter::getSum() const {
 }
 
 // Return true if we have a valid average
-const bool ADCAveragingFilter::valid() const{
+bool ADCAveragingFilter::valid() const{
     return isValid;
 }
 

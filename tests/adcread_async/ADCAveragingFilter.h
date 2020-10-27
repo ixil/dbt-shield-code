@@ -43,16 +43,16 @@ class ADCAveragingFilter {
         ADCPin_t pinNo;
 
         bool isActive;
-
-        volatile uint16_t sum;
-        volatile uint8_t idx;
-        volatile uint16_t readings[FilterLength];
         volatile bool isValid;
+
+        volatile uint8_t idx;
+        volatile uint16_t sum;
+        volatile uint16_t readings[FilterLength];
 
         static ADCAveragingFilter *instance;
 
     public:
-        ADCAveragingFilter(){};
+        // ADCAveragingFilter(){};
         ADCAveragingFilter(const ADCPin_t pinNo, const uint16_t initVal);
         // ADCAveragingFilter& getInstance();
         void disableADC();
@@ -72,14 +72,14 @@ class ADCAveragingFilter {
         static void AveragingISRHandler();
         void startConversion();
         void startClockedADC();
-        void setSingleShotMode(const ADCPreScaler_t prescale=64);
+        void setSingleShotMode(const ADCPreScaler_t prescale=4);
         void setupTriggeredADC(const ADCTriggerSource source, const ADCPreScaler_t prescale, const bool interrupt=false);
-        void startFreeRunningADC(const uint8_t prescale=64);
+        void startFreeRunningADC(const uint8_t prescale=4);
 
         void run();
 
         // Return true if we have enough samples
-        const bool valid() const;
+        bool valid() const;
 
         // Return the raw sum
         uint16_t getSum() const;
