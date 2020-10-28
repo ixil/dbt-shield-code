@@ -32,8 +32,8 @@ void ADCAveragingFilter::init() {
     isActive = false;
     // analogReference(EXTERNAL);
     ADCSRA = bit(ADEN); // turn on the ADC
-    // ADMUX = bit(REFS0); //AVcc
-    ADMUX =  bit(REFS1); //AVext
+    ADMUX = bit(REFS0); //AVcc
+    // ADMUX =  bit(REFS1); //AVext
     ADMUX |= (pinNo & 0x07); // Select ADC MUX pin and set AREF
 }
 
