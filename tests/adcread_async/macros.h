@@ -1,1 +1,5 @@
-../../inc/macros.h
+
+
+// #ifndef ENABLED
+// #define ENABLED ()
+// #endif /* ifndef ENABLED */
