@@ -37,7 +37,7 @@ TemperatureStatus Thermistor::readTemperature(double& temperature){
       break;
   }
   // Max Vin could be
-  const int16_t Vref = (1<<(Globals::ADCSampleBits + ADCAveragingFilter::ThermistorOverSampleBits)) - 1;
+  const int16_t Vref = ((1 << Globals::ADCSampleBits) - 1) <<  ADCAveragingFilter::ThermistorOverSampleBits;
   Serial.print(" Vref: ");
   Serial.print(Vref);
   Serial.print("v, Vin: ");
