@@ -27,66 +27,53 @@
 #define PWM9 9
 
 #define HEATER_PWM0_PIN 5
-#define HEATER_PWM1_PIN 5
+#define HEATER_PWM1_PIN 6
 
 
-// #define MOSFET_0_PIN                          10
-// #define MOSFET_1_PIN                          11
-// #define MOSFET_2_PIN                          12
-// #define MOSFET_3_PIN                          13
-//
-//
-// #define IN_b0                                 25
-// #define IN_b1                                 26
-// #define IN_b2                                 27
-// #define IN_b3                                 28
-// #define IN_b4                                 29
-// #define IN_b5                                 30
-// #define IN_b6                                 31
-// #define IN_b7                                 32
-// #define IN_b8                                 33
-// #define IN_b9                                 34
-// #define IN_b10                                35
-// #define IN_b11                                36
-// #define IN_b12                                37
-// #define IN_b13                                38
-// #define IN_b14                                39
-// #define IN_b15                                40
-//
-//
-// #define OUT_b0                                44
-// #define OUT_b1                                45
-// #define OUT_b2                                42
-// #define OUT_b3                                43
-// #define OUT_b4                                49
-// #define OUT_b5                                48
-// #define OUT_b6                                46
-// #define OUT_b7                                47
-//
-//
-// #define MOT_STEP_PIN                          22
-// #define MOT_DIR_PIN                           24
-// #define MOT_ENBL_PIN                          23
-//
-//
-// #define MISO                                  50
-// #define SCK                                   52
-//
-//
-// #define T1_CS                                 19
-// #define T2_CS                                 18
-//
-// #define HEADER_D_0                            0
-// #define HEADER_D_1                            1
-// #define HEADER_D_2                            2
-// #define HEADER_D_3                            3
-// #define HEADER_D_4                            4
-// #define HEADER_D_5                            5
-// #define HEADER_A_0                            A0
-// #define HEADER_A_1                            A1
-// #define HEADER_A_2                            A2
-// #define HEADER_A_3                            A3
-// #define HEADER_A_4                            A4
-// #define HEADER_A_5                            A5
+#define STEPPER_0_CS      (11)
+#define STEPPER_0_EN      (10)
+#define STEPPER_0_STP     (27)
+#define STEPPER_0_DIR     (25)
+
+#define STEPPER_1_CS      (13)
+#define STEPPER_1_EN      (12)
+#define STEPPER_1_STP     (23)
+#define STEPPER_1_DIR     (25)
+
+#define EXTRUDER_CS  STEPPER_0_CS
+#define EXTRUDER_EN  STEPPER_0_EN
+#define EXTRUDER_STP STEPPER_0_STP
+
+void setupPinModes() {
+    // Handled by TMC2130Stepper::begin()
+    pinMode(STEPPER_0_CS, OUTPUT);
+    pinMode(STEPPER_1_CS, OUTPUT);
+    pinMode(STEPPER_0_EN, OUTPUT);
+    pinMode(STEPPER_1_EN, OUTPUT);
+    pinMode(STEPPER_0_STP, OUTPUT);
+    pinMode(STEPPER_1_STP, OUTPUT);
+    pinMode(STEPPER_0_DIR, OUTPUT);
+    pinMode(STEPPER_1_DIR, OUTPUT);
+    pinMode(PWM0, OUTPUT);
+    pinMode(PWM1, OUTPUT);
+    pinMode(PWM2, OUTPUT);
+    pinMode(PWM3, OUTPUT);
+    pinMode(PWM4, OUTPUT);
+    pinMode(PWM5, OUTPUT);
+    pinMode(PWM6, OUTPUT);
+    pinMode(PWM7, OUTPUT);
+    pinMode(PWM8, OUTPUT);
+    pinMode(PWM9, OUTPUT);
+
+    pinMode(THERMISTOR_ON, OUTPUT);
+    pinMode(OPTO_I0, INPUT);
+    pinMode(OPTO_I1, INPUT);
+    pinMode(OPTO_I2, INPUT);
+    pinMode(OPTO_I3, INPUT);
+    pinMode(THERMISTOR, INPUT);
+}
+
+
+
 
 #endif /* end of include guard: PINS_H_RSOALORP */

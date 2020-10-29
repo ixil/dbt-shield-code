@@ -15,7 +15,7 @@ constexpr ESTOP_TYPE ESTOP_TYPE = ESTOP_TYPE::FREEWHEEL;
 // #define HYBRID_THRESHOLD true
 #define MICROSTEPPING 16
 
-// You can define starting values here:
+// TMC Stepper Config
 constexpr struct {
   const uint16_t microsteps      = MICROSTEPPING;    // TODO
   const uint8_t blank_time       = 24;   // [16, 24, 36, 54]
@@ -39,10 +39,6 @@ constexpr struct {
 //   #error "Update TMC2130Stepper library to 2.2.1 or newer ver"" ##TMC2130STEPPER_VERSION
 // #endif
 
-TMC2130Stepper STEPPER0(STEPPER_0_CS, STEPPER_0_R_SENSE);
-TMC2130Stepper STEPPER1(STEPPER_1_CS, STEPPER_1_R_SENSE);
-TMC2130Stepper steppers[] = { STEPPER0, STEPPER1 };
-
 // Following Quick configuration guide Page 81/103
 // https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
 
@@ -50,42 +46,6 @@ TMC2130Stepper steppers[] = { STEPPER0, STEPPER1 };
 // Following values from Trinamic's spreadsheet with values for a NEMA17 (42BYGHW609)
 // https://www.trinamic.com/products/integrated-circuits/details/tmc2130/
 
-  void tmc2130_init(TMC2130Stepper &st, const uint16_t mA, const float spmm) {
-    st.begin();
-    st.I_scale_analog(false);
-    st.internal_Rsense(false);
-    st.rms_current(mA, stepperconfig.hold_multiplier);
-    st.setSPISpeed(4e6);
-    st.microsteps(stepperconfig.microsteps);
-    st.blank_time(stepperconfig.blank_time);
-    st.intpol(stepperconfig.interpolate); // Interpolate
-    // st.dedge(stepperconfig.dedge);
-    st.TPOWERDOWN(128); // ~2s until driver lowers to hold current
-
-    if (ESTOP_TYPE == ESTOP_TYPE::BRAKE) {
-      st.stop_enable(true);
-    } else {
-      st.stop_enable(false);
-    }
-
-    // Could be tuned for stealthchop
-    st.toff(5); // Only enables the driver if used with stealthChop
-    st.hysteresis_start(3);
-    st.hysteresis_end(2);
-
-    if (STEALTHCHOP) {
-      st.en_pwm_mode(true);
-      st.pwm_freq(1); // f_pwm = 2/683 f_clk
-      st.pwm_autoscale(true);
-      st.pwm_grad(5);
-      st.pwm_ampl(255);
-      if (HYBRID_THRESHOLD) {
-        st.TPWMTHRS(12650000UL*stepperconfig.microsteps/(256*stepperconfig.threshold*spmm));
-      }
-    }
-    st.GSTAT(); // Clear GSTAT
-  }
-
-  //     stepperX.sgt(X_HOMING_SENSITIVITY);
+  void tmc2130_init(TMC2130Stepper &st, const uint16_t mA, const float spmm);
 
 #endif /* STEPPER_H */

@@ -20,4 +20,22 @@ __attribute__((noinline))  void setADCInterruptHandler(const InterruptHandler_t 
 }
 }
 
+
+/* 
+   ISR(TIMER4_COMPA_vect){
+   STEP_PORT ^= 1 << STEPPER1_BIT_POS; //Toggle the bit, using dedge
+   if (speedChange[1]){
+   updateStepper1Speed();
+   }
+   }
+   */
+
+ISR(TIMER5_COMPA_vect){
+    STEP_PORT ^=  1 << STEPPER0_BIT_POS; //Toggle the bit, using dedge
+    if (extruder.speedChange()){
+        updateStepper0Speed();
+    }
+};
+
+
 #endif /* end of include guard: INTERRUPTS_H_ABZSEOYR */

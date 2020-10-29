@@ -1,6 +1,6 @@
 
 #include "../inc/pin_mappings.h"
-#include <TMPStepper.h
+#include "TMPStepper.h"
 
 void updateTemperature() {}
 void readDisplayInputs() {}
