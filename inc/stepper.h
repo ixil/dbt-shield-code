@@ -1,7 +1,7 @@
 #ifndef STEPPER_H
 #define STEPPER_H
 
-#include <TMCStepper.h>
+#include "TMCStepper.h"
 #include <SPI.h>
 #include "stepper_pins.h"
 
@@ -12,11 +12,12 @@ enum class ESTOP_TYPE { BRAKE, FREEWHEEL };
 // Settings
 constexpr ESTOP_TYPE ESTOP_TYPE = ESTOP_TYPE::FREEWHEEL;
 #define STEALTHCHOP true
-#define HYBRID_THRESHOLD true
+// #define HYBRID_THRESHOLD true
+#define MICROSTEPPING 16
 
 // You can define starting values here:
 constexpr struct {
-  const uint16_t microsteps      = 1;    // TODO
+  const uint16_t microsteps      = MICROSTEPPING;    // TODO
   const uint8_t blank_time       = 24;   // [16, 24, 36, 54]
   const uint8_t off_time         = 3;    // [1..15]
   const uint8_t hysteresis_start = 1;    // [1..8]
@@ -38,8 +39,8 @@ constexpr struct {
 //   #error "Update TMC2130Stepper library to 2.2.1 or newer ver"" ##TMC2130STEPPER_VERSION
 // #endif
 
-TMC2130Stepper STEPPER0(STEPPER_0_CS, STEPPER_0_R_SENSE, 0);
-TMC2130Stepper STEPPER1(STEPPER_1_CS, STEPPER_1_R_SENSE, 1);
+TMC2130Stepper STEPPER0(STEPPER_0_CS, STEPPER_0_R_SENSE);
+TMC2130Stepper STEPPER1(STEPPER_1_CS, STEPPER_1_R_SENSE);
 TMC2130Stepper steppers[] = { STEPPER0, STEPPER1 };
 
 // Following Quick configuration guide Page 81/103

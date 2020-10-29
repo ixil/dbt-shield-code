@@ -4,7 +4,7 @@
 #include <TMCStepper.h>
 #include <SPI.h>
 #include "stepper_pins.h"
-
+// #include "stepperTimings.h"
 // Settings
 enum class ESTOP_TYPE { BRAKE, FREEWHEEL };
 
@@ -13,6 +13,7 @@ enum class ESTOP_TYPE { BRAKE, FREEWHEEL };
 constexpr ESTOP_TYPE ESTOP_TYPE = ESTOP_TYPE::FREEWHEEL;
 #define STEALTHCHOP true
 #define HYBRID_THRESHOLD true
+#define NSTEPPERS 2
 
 // You can define starting values here:
 constexpr struct {
@@ -33,6 +34,23 @@ constexpr struct {
 #define HYBRID_THRESHOLD false
 #endif /* ifndef HYBRID_THRESHOLD */
 
+
+class Stepper {
+  int32_t countPosition[NSTEPPERS] = {0,0};  // in steps
+  bool changeDirectionNext[NSTEPPERS] = {false, false};
+
+  bool getDirection(uint8_t stepper);
+  int32_t getPosition(uint8_t stepper);
+
+  // Stepper ISRs
+  void sleep();
+  void wakeup();
+  void isAwake();
+
+  static void stepperIsr();
+  static void pulseIsr();
+
+}
 
 // #if TMC2130STEPPER_VERSION < 0x020201
 //   #error "Update TMC2130Stepper library to 2.2.1 or newer ver"" ##TMC2130STEPPER_VERSION
