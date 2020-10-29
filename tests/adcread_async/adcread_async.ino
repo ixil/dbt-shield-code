@@ -1,22 +1,38 @@
 #include "Interrupts.h"
 #include "Thermistor.h"
+#include "serial.h"
+//#include <AutoPID.h>
+#include <avr/pgmspace.h>
+#include "pid.h"
 
 ISR(ADC_vect){ (*InterruptGlobals::ADCInterrupt)(); }
 /* ISR(ADC_vect){ ADCAveragingFilter::AveragingISRHandler(); }; */
 Thermistor thermistor(0);
+double temperature;
+
+
+bool heaterOn = false;
+double  setPoint, outputVal;
+
 
 void setup () {
 
-  Serial.begin(230400);
+  Serial.begin(9600);
   Serial.println();
   pinMode(A1, OUTPUT);
   pinMode(A0, INPUT);
+  pinMode(6, OUTPUT);
+  pinMode(5, OUTPUT);
   digitalWrite(A1, HIGH);
   cli();
   for (int i=0; i<9; ++i){
     pinMode(i, OUTPUT);
     digitalWrite(i, LOW);
   }
+
+  initPID();
+  setPoint = 70.0;
+
   thermistor.init();
   sei();
   delay(100);
@@ -29,8 +45,8 @@ void update(){
 
 void loop () {
   // do something with the reading, for example, print it
-  double temperature;
   TemperatureStatus tstat = thermistor.readTemperature(temperature);
+  /*
   switch (tstat) {
     case TemperatureStatus::Success:
       Serial.print(temperature); Serial.println("C.");
@@ -50,6 +66,16 @@ void loop () {
       Serial.print(" Some other type of error!");
       break;
   };
+  */
+  
+
+  runPID();
+  //Serial.println(temperature);
+  //erial.println("HEATER ON\n\n");
+  //Serial.println(outputVal);
+  //Serial.println("\n\n");
+  
+  processCom();
   Serial.flush();
   update();
 }  // end of loop
