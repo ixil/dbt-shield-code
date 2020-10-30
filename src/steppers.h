@@ -98,12 +98,12 @@ struct TMCDriverConfig {
       void setDirection(Direction dir);
       void changeDirection();
       void setTargetStepperSpeed(double speed);
-      void disableStepper();
-      void enableStepper();
+      void disable();
+      void enable();
       void setupPins();
       uint32_t getDrvStatus();
       bool stallStatus();
-      bool enabled();
+      bool isEnabled();
 
       static void StepperISR();
 }

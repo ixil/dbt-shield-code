@@ -4,30 +4,73 @@
 #include "pid.h"
 #include "interrupts.h"
 
-TMC2130Stepper *extruderDriver;
-Stepper *extruderInstance;
+TMC2130Stepper extruderDriver(STEPPER_0_CS, STEPPER_0_R_SENSE, 0);
+Stepper extruderStepper(EXTRUDER_EN, EXTRUDER_STP, EXTRUDER_DIR, EXTRUDER, false);
+
+// ADC0 is pin 0
+Thermistor thermistor(0);
+
+double temperature;
+double setPoint, outputVal;
+bool heaterOn;
+
+ISR(ADC_vect){ (*InterruptGlobals::ADCInterrupt)(); }
 
 void setup() {
   // put your setup code here, to run once:
   setupPinModes();
+  extruderStepper.setupPins();
 
   Serial.begin(230400);
   while(!Serial);
   Serial.println("\nStart...");
   SPI.begin();
+  extruderStepper.setup(); // after SPI
 
-  extruderDriver = new TMC2130Stepper();
-  extruderInstance = new Stepper(EXTRUDER_EN, EXTRUDER_STP, EXTRUDER_DIR, *extruderDriver, false);
 
   extruderInstance->enable();
 
+  therimstor.init();
+  initPID();
   timersSetup();
+  extruderStepper.setupStepperTimer5();
+}
+
+void errorCondition(){
+  heaterOn = false;
+  //TODO disable motor
+  /* actually call the cmomands, don't wait for the loop */
+
+}
+
+void poll(){
+  therimstor.run()
 }
 
 void loop() {
 
-  void exec(char);
-  void processCom();
+  thermistor.run();
+  TemperatureStatus tstat = thermistor.readTemperature(temperature);
+  switch (tstat) {
+    case TemperatureStatus::NotReady:
+      break;
+    case TemperatureStatus::OpenCircuit:
+      heaterOn = false;
+      Serial.print(temperature); Serial.println("C.");
+      Serial.print(" Open circuit!");
+      errorCondition();
+      break;
+    case TemperatureStatus::ShortCircuit:
+      Serial.print(temperature); Serial.println("C.");
+      Serial.print(" Short circuit!");
+      errorCondition();
+      break;
+  }
+  runPID();
+
+  processCom(); // Process the serial commands
+  poll();
+  Serial.flush();
 
   static uint16_t reverseTime = millis();
   static uint16_t speedChangeTime = millis();
@@ -59,7 +102,7 @@ void loop() {
   if((currentMillis - last_time) > 100000) {
     reverseTime = millis();
     Serial.println("\nlets reverse...");
-    changeStepper0Direction();
+    extruderStepper.changeDirection();
     /* changeStepper1Direction(); */
     last_time = millis();
   }

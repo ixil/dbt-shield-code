@@ -7,10 +7,10 @@ void Stepper::StepperISR(){
 }
 
 Stepper::Stepper(uint8_t enablePin, uint8_t stepPin, uint8_t dirPin, TMC2130Stepper &stp, bool
-        invert=false) : enablePin(enablePin), stepPin(stepPen), dirPin(dirPin), speedChange(false), targetPulses(0), direction(CW), invertDir(invert),
-    stdrv(stp), tmcConf(TMCStepperConfig), drv_status=0;
+    invert=false) : enablePin(enablePin), stepPin(stepPen), dirPin(dirPin), speedChange(false),
+  targetPulses(0), direction(CW), invertDir(invert), stdrv(stp), tmcConf(TMCStepperConfig),
+  drv_status=0
 {
-
 }
 
   void Stepper::tmc2130_init() {
@@ -80,11 +80,9 @@ void Stepper::changeStepper1Direction(){
   TIMSK4 |= bit(OCIE4B) | bit(TOIE4); // reenable interrupt
 }
 
-
 void Stepper::setTargetStepperSpeed(double speed){
     targetPulse = uint16_t(TIMER_FREQ / (speed * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
 }
-
 
 static void Stepper::updateStepperTimer5(Stepper &st){
     OCR5A = st.targetPulse;
@@ -119,11 +117,11 @@ void Stepper::setupStepperTimer4(){
     TIMSK4 = bit(OCIE4B) ;
 }
 
-void Stepper::disableStepper(){
+void Stepper::disable(){
     digitalWrite(enablePin, LOW);
 }
 
-void Stepper::enableStepper(){
+void Stepper::enable(){
     digitalWrite(enablePin, HIGH);
 }
 
@@ -142,6 +140,6 @@ uint32_t Stepper::getDrvStatus(){
 bool Stepper::stallStatus() {
     return stdrv.stallGuard();
 }
-bool Stepper::enabled(){
+bool Stepper::isEnabled(){
     return stpdrv.isEnabled();
 }

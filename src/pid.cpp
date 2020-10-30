@@ -13,6 +13,6 @@ void runPID(){
 void initPID(){
     myPID.setBangBang(4);
     //set PID update interval to 4000ms
-    myPID.setTimeStep(4000);
+    myPID.setTimeStep(PID_TIMEINTERVAL);
 }
 
