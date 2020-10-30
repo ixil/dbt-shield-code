@@ -1,4 +1,5 @@
 #pragma once
+#include <avr/pgmspace.h>
 
 #define BUF_LENGTH 128
 static bool do_echo = true;

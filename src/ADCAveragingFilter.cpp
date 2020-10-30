@@ -1,4 +1,4 @@
-#include "Interrupts.h"
+#include "interrupts.h"
 #include "ADCAveragingFilter.h"
 #include <util/atomic.h>
 

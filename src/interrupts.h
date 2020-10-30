@@ -13,11 +13,7 @@ namespace InterruptGlobals {
     typedef void (*InterruptHandler_t)(void);
     inline InterruptHandler_t ADCInterrupt;
 
-__attribute__((noinline))  void setADCInterruptHandler(const InterruptHandler_t callback){
-    if (callback != nullptr) {
-        ADCInterrupt = callback;
-    }
-}
+__attribute__((noinline))  void setADCInterruptHandler(const InterruptHandler_t callback);
 }
 
 
@@ -29,13 +25,6 @@ __attribute__((noinline))  void setADCInterruptHandler(const InterruptHandler_t 
    }
    }
    */
-
-ISR(TIMER5_COMPA_vect){
-    STEP_PORT ^=  1 << STEPPER0_BIT_POS; //Toggle the bit, using dedge
-    if (extruder.speedChange()){
-        updateStepper0Speed();
-    }
-};
 
 
 #endif /* end of include guard: INTERRUPTS_H_ABZSEOYR */

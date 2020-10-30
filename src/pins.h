@@ -45,7 +45,7 @@
 #define EXTRUDER_STP STEPPER_0_STP
 #define EXTRUDER_DIR STEPPER_0_DIR
 
-void setupPinModes() {
+void __attribute__((weak)) setupPinModes() {
     // Handled by TMC2130Stepper::begin()
     pinMode(STEPPER_0_CS, OUTPUT);
     pinMode(STEPPER_1_CS, OUTPUT);

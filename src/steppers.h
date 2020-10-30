@@ -26,7 +26,7 @@ constexpr double STEPS_PER_MM = MOTORSTEPS*MICROSTEPPING*GEAR_RATIO / (HOB_DIAME
 
 
 // TMC Stepper Config
-struct TMCDriverConfig {
+inline struct TMCDriverConfig {
   const uint16_t microsteps      = MICROSTEPPING;    // TODO
   const uint8_t blank_time       = 24;   // [16, 24, 36, 54]
   const uint8_t off_time         = 3;    // [1..15]
@@ -35,8 +35,9 @@ struct TMCDriverConfig {
   const float hold_multiplier    = 0.5f; // [0..1]
   const float threshold          = 0.1f; // TODO
   const bool interpolate         = true;
-  const uint16_t mA = 900;
-  const float spmm = 800; // TODO
+  const bool dedge               = true;
+  const uint16_t mA              = 900;
+  const float spmm               = 800; // TODO
 } TMCStepperConfig;
 
 #ifndef STEALTHCHOP
@@ -54,6 +55,15 @@ struct TMCDriverConfig {
 #define STEPPER0_BIT_POS      0 // Match with STEP_PIN
 #define STEPPER1_BIT_POS      3 // Match with STEP_PIN
 
+#ifndef STEPPER_R_SENSE
+#define STEPPER_R_SENSE (0.11f)
+#endif
+#define STEPPER_0_R_SENSE STEPPER_R_SENSE
+#define STEPPER_1_R_SENSE STEPPER_R_SENSE
+
+class Stepper;
+extern Stepper* extruderInstance;
+
   class Stepper {
 
       enum class Direction { CW, CCW };
@@ -69,13 +79,13 @@ struct TMCDriverConfig {
 
       volatile bool speedChange = false;
       uint16_t targetPulse = 0;
-      Direction direction = CW;
+      Direction direction = Direction::CW;
 
       bool invertDir = false;
 
-      TMC2130Stepper &stdrv;
+      TMC2130Stepper &stpdrv;
       TMCDriverConfig tmcConf;
-      decltype(millis()) lastStatusUpdate = 0;
+      uint16_t lastStatusUpdate = 0;
       uint32_t drvStatus = 0;
 
       // Internal functions
@@ -86,14 +96,14 @@ struct TMCDriverConfig {
 
       static void setupStepperTimer4();
       static void setupStepperTimer5();
-      static void updateStepperTimer4();
-      static void updateStepperTimer5();
+      static void updateStepperTimer4(Stepper &stp);
+      static void updateStepperTimer5(Stepper &stp);
 
       public:
       // Following Quick configuration guide Page 81/103
       // https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf
       Stepper(uint8_t enablePin, uint8_t stepPin, uint8_t dirPin, TMC2130Stepper &stp, bool invert=false);
-      virtual ~Stepper();
+      ~Stepper() = default;
       void setup();
       void setDirection(Direction dir);
       void changeDirection();
@@ -104,9 +114,10 @@ struct TMCDriverConfig {
       uint32_t getDrvStatus();
       bool stallStatus();
       bool isEnabled();
+      void setupTimers();
 
       static void StepperISR();
-}
+};
 
 // timerSetup(); //TODO
 

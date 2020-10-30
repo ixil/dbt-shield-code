@@ -1,17 +1,13 @@
+#include "controller.h"
 #include <Arduino.h>
 #include <util/atomic.h>
 #include "pins.h"
-#include "Interrupts.h"
-#include "stepper_pins.h"
-
+#include "interrupts.h"
 #include "TimerInterrupt.h"
+
 /* ISR(ADC_vect){ ADCAveragingFilter::AveragingISRHandler(); }; */
 
-volatile float extruderTargetSpeed = 0.0; // mm/s
-double extruderTargetFlowRate = 0.0; // mm^3/s
-
-volatile bool heatersEnabled = false;
-volatile bool motorsEnabled = false;
+namespace Controller {
 
 /*! In mm^3/s */
 double calculateFlowRate(float speed) {
@@ -27,18 +23,11 @@ float calculateExtrudeSpeed(double flowrate) {
 
 /*! In mm/s */
 void setExtruderTargetSpeed(float target) {
-    extruderTargetSpeed = target;
-}
-
-void writeDigitalPinHigh(uint8_t pin){
-    const uint8_t portBit = digitalPinToBitMask(pin);
-    const uint8_t port = digitalPinToPort(pin);
-    volatile uint8_t *out = portOutputRegister(port);
-    *out |= portBit;
+    ::extruderTargetSpeed = target;
 }
 
 void enableSteppers(){
-    motorsEnabled = true;
+    ::motorsEnabled = true;
     const uint8_t port = digitalPinToPort(STEPPER_0_EN);
     const uint8_t portBits = digitalPinToBitMask(STEPPER_0_EN) | digitalPinToBitMask(STEPPER_1_EN);
     volatile uint8_t *out = portOutputRegister(port);
@@ -46,7 +35,7 @@ void enableSteppers(){
 }
 
 void disableSteppers(){
-    motorsEnabled = true;
+    ::motorsEnabled = true;
     const uint8_t port = digitalPinToPort(STEPPER_0_EN);
     const uint8_t portBits = digitalPinToBitMask(STEPPER_0_EN) | digitalPinToBitMask(STEPPER_1_EN);
     volatile uint8_t *out = portOutputRegister(port);
@@ -54,18 +43,17 @@ void disableSteppers(){
 }
 
 void enableHeater(){
-    heatersEnabled = true;
+    ::heaterOn = true;
 }
 
 void disableHeater(){
     digitalWrite(PWM5, LOW);
     digitalWrite(PWM6, LOW);
-    heatersEnabled = false;
+    ::heaterOn = false;
 }
 
-
 void enableExtruder(){
-    motorsEnabled = true;
+    ::motorsEnabled = true;
     const uint8_t port = digitalPinToPort(EXTRUDER_EN);
     const uint8_t portBit = digitalPinToBitMask(EXTRUDER_EN);
     volatile uint8_t *out = portOutputRegister(port);
@@ -77,8 +65,8 @@ void disableExtruder(){
     const uint8_t portBit = digitalPinToBitMask(EXTRUDER_EN);
     volatile uint8_t *out = portOutputRegister(port);
     *out |= portBit; // Extruders are ACTIVE LOW
-    motorsEnabled = false;
-    extruderTargetSpeed = 0.0;
+    ::motorsEnabled = false;
+    ::extruderTargetSpeed = 0.0;
 }
 
 void disableAllPWMs() {
@@ -86,7 +74,7 @@ void disableAllPWMs() {
         pinMode(i, OUTPUT);
         digitalWrite(i, LOW);
     }
-    motorsEnabled = false;
+    ::motorsEnabled = false;
 }
 
 
@@ -164,72 +152,30 @@ void timerISR(void){
     pollDigitalInputs();
 }
 
-void setupTimerInterrupts(){
+void setupControlTimers(){
     /* ITimer3.init(); */
     if (ITimer3.attachInterruptInterval(5, timerISR)){
-        Serial.println("Timer3 interrupt setup");
     } else{
         Serial.println("Timer3 failed to setup!");
         abort();
     }
 }
 
-void updateTimers(){
-}
 
-void setupPins(){
-
-    DDRA &= ~(OPTO_INPUT_BITMASK);
-    /* pinMode(OPTO_I0, INPUT); */
-    /* pinMode(OPTO_I1, INPUT); */
-    /* pinMode(OPTO_I2, INPUT); */
-    /* pinMode(OPTO_I3, INPUT); */
-
-}
-
-void setup () {
-    setup_killpins();
-    setupPins();
-    /* setup_powerhold(); */
-    /* disableStepperDrivers(); */
-    enableExtruder();
-    Serial.begin(230400);
-    Serial.println();
-    setupTimerInterrupts();
-}  // end of setup
-
-
-void loop () {
+void pollControlPins() {
   Serial.flush();
   pollDigitalInputs();
+// #ifdef NDEBUG
   Serial.println("Inputs");
   Serial.println(OPTO_PORT & 0x55, BIN);
   Serial.print(" ExtruderTargetSpeed set to: ");
-  Serial.print(extruderTargetSpeed);
+  Serial.print(::extruderTargetSpeed);
   Serial.println("mm/s");
   Serial.print(" Heaters : ");
-  Serial.print(heatersEnabled);
+  Serial.print(::heaterOn);
   Serial.print(" Motors: ");
-  Serial.println(motorsEnabled);
+  Serial.println(::motorsEnabled);
   Serial.println();
-
-}  // end of loop
-
-
-/* 
- void setup() {
-     thermalManager.init();    // Initialize temperature loop
-     job_timer.init();   // Initial setup of print job timer
-     steppers.init();           // Init stepper. This enables interrupts!
-     lcd_init();
-     lcd_reset_status();
- 
- #if ENABLED(SHOW_BOOTSCREEN)
-     lcd_bootscreen();
- #endif
- 
- #if ENABLED(USE_WATCHDOG)
-     watchdog_init();
- #endif
- }
- */
+// #endif
+}
+}

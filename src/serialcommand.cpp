@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Serial.h"
+#include "serialcommand.h"
 
 void exec(char *cmdline)
 {
@@ -42,7 +42,7 @@ void exec(char *cmdline)
         int number = atoi(strsep(&cmdline, " "));
         int value = atoi(cmdline);
         setPoint = value;
-        if(number = 1) heaterOn = true;
+        if(number == 1) heaterOn = true;
         else heaterOn = false;
     } else if(strcmp_P(command, PSTR("load")) == 0){
         //TODO load filament 
