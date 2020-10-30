@@ -96,7 +96,8 @@ void pollStepperDisable(){
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
         const uint8_t bit = digitalPinToBitMask(STEPPER_DISABLE_PIN);
         const uint8_t port = digitalPinToPort(STEPPER_DISABLE_PIN);
-        if ( *portInputRegister(port) & bit ) {
+        // Opto outputs are active low, so flip the bits
+        if ( !(*portInputRegister(port) & bit )) {
             disableSteppers();
         }
     }
@@ -106,17 +107,20 @@ void pollHeaterDisable(){
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
         const uint8_t bit = digitalPinToBitMask(HEATER_DISABLE_PIN);
         const uint8_t port = digitalPinToPort(HEATER_DISABLE_PIN);
-        if ( *portInputRegister(port) & bit ) {
+        // Opto outputs are active low, so flip the bits
+        if ( !(*portInputRegister(port) & bit )) {
             disableHeater();
         }
     }
 }
 
+
 /*! Disables the heater, blocking interrupts, if the HEATER_DISABLE pin is high.*/
 void pollDigitalInputs(){
     uint8_t bitCount, speedBits;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
-        const uint8_t inputs = (OPTO_PORT & OPTO_INPUT_BITMASK);
+      // Opto outputs are active low, so flip the bits
+        const uint8_t inputs = OPTO_INPUT_BITMASK & ~(OPTO_PORT & OPTO_INPUT_BITMASK);
         bool quit = inputs & (digitalPinToBitMask(HEATER_DISABLE_PIN) |
                 digitalPinToBitMask(STEPPER_DISABLE_PIN));
         if (quit) {

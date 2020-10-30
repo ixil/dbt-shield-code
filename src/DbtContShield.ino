@@ -55,6 +55,8 @@ void errorCondition(){
 void poll(){
   thermistor.run();
   pollControlPins();
+  //FIXME only update on a change
+  extruderStepper.setTargetStepperSpeed(extruderTargetSpeed);
 }
 
 void loop() {
