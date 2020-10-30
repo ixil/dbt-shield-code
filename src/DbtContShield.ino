@@ -17,7 +17,9 @@ bool motorsEnabled;
 double temperature;
 double setPoint, outputVal;
 bool heaterOn;
-double extruderTargetSpeed;
+volatile double extruderTargetSpeed;
+bool speedUpdate;
+ 
 
 ISR(ADC_vect){ (*InterruptGlobals::ADCInterrupt)(); }
 
@@ -50,13 +52,24 @@ void errorCondition(){
   heaterOn = false;
   extruderStepper.setTargetStepperSpeed(0.0);
   // extruderStepper.disable();
+  Serial.println("Error condition, Disabling");
 }
 
 void poll(){
   thermistor.run();
   pollControlPins();
   //FIXME only update on a change
+  if (motorsEnabled){
+    Serial.println("e enabled");
+    extruderStepper.enable();
+  }
+  else{
+    Serial.println("e disabled");
+    extruderStepper.disable();
+  }
   extruderStepper.setTargetStepperSpeed(extruderTargetSpeed);
+  Serial.print("Target speed is currently: ");
+  Serial.println(extruderTargetSpeed);
 }
 
 void loop() {
@@ -72,7 +85,7 @@ void loop() {
       Serial.print(temperature); Serial.println("C.");
       Serial.print(" Short circuit!");
     case TemperatureStatus::Error:
-      errorCondition();
+      // errorCondition(); //TODO uncomment once finished testing
       break;
     default:
       break;

@@ -90,7 +90,15 @@ void Stepper::changeStepper1Direction(){
 }
 
 void Stepper::setTargetStepperSpeed(double speed){
-    targetPulse = uint16_t(TIMER_FREQ / (speed * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+    targetPulse = uint16_t((speed * STEPS_PER_MM  / ((double)(F_CPU) / STEP_PRESCALER)) - 0.5); // round, and do 0 count offset
+    Serial.print("timer freq ");
+    Serial.print(uint16_t((  / ((double)(F_CPU) / STEP_PRESCALER)) - 0.5));
+    Serial.print(" SPMM: ");
+    Serial.print(STEPS_PER_MM);
+    Serial.print(" speed: ");
+    Serial.println(speed);
+    Serial.print("Target pulse: ");
+    Serial.println(targetPulse);
 }
 
 void Stepper::updateStepperTimer5(Stepper &st){
@@ -109,7 +117,7 @@ void Stepper::updateStepperTimer4(Stepper &st){
 
 void Stepper::setupStepperTimer5(){
     TCCR5A = bit(COM5A1);
-    TCCR5B = bit(WGM52) | bit(CS42); //| bit(CS40); // CS42, CS41, CS40; // Prescaler 0, 1, 8, 64, 256, 1024, external
+    TCCR5B = bit(WGM52) | bit(CS52); //| bit(CS40); // CS42, CS41, CS40; // Prescaler 0, 1, 8, 64, 256, 1024, external
     // Force output compare, (for immediate compare match)
     TCCR5C =  bit(FOC5A) | bit(FOC5B) | bit(FOC5C); // CS42, CS41, CS40; // 0, 1, 8, 64, 256, 1024, external
     // interrupt mask (input / output compare channels and timer overflow)
@@ -127,11 +135,11 @@ void Stepper::setupStepperTimer4(){
 }
 
 void Stepper::disable(){
-    digitalWrite(enablePin, LOW);
+    digitalWrite(enablePin, HIGH);
 }
 
 void Stepper::enable(){
-    digitalWrite(enablePin, HIGH);
+    digitalWrite(enablePin, LOW);
 }
 
 void Stepper::setupPins(){
@@ -139,7 +147,7 @@ void Stepper::setupPins(){
     pinMode(stepPin, OUTPUT);
     pinMode(enablePin, OUTPUT);
     pinMode(dirPin, OUTPUT);
-    digitalWrite(enablePin, HIGH);
+    disable();
 }
 
 uint32_t Stepper::getDrvStatus(){

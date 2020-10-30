@@ -6,14 +6,13 @@
 #define THERMISTOR                            A0
 #define THERMISTOR_ON                         A1
 
-#define OPTO_PORT PORTA
-#define OPTO_INPUT_BITMASK 0x55
-#define OPTO_I0 22
-#define OPTO_I1 24
-#define OPTO_I2 26
-#define OPTO_I3 28
-#define HEATER_DISABLE_PIN OPTO_I0
-#define STEPPER_DISABLE_PIN OPTO_I3
+#define OPTO_I0 14
+#define OPTO_I1 15
+#define OPTO_I2 16
+#define OPTO_I3 17
+#define HEATER_DISABLE_BIT (0b1000)
+#define STEPPER_DISABLE_BIT (0b0100)
+#define SPEED_BITS_MASK (0b0011)
 
 #define PWM0 0
 #define PWM1 1
@@ -30,15 +29,15 @@
 #define HEATER_PWM1_PIN 6
 
 
-#define STEPPER_0_CS      (11)
-#define STEPPER_0_EN      (10)
+#define STEPPER_0_CS      (13)
+#define STEPPER_0_EN      (12)
 #define STEPPER_0_STP     (27)
-#define STEPPER_0_DIR     (25)
+#define STEPPER_0_DIR     (29)
 
-#define STEPPER_1_CS      (13)
-#define STEPPER_1_EN      (12)
+#define STEPPER_1_CS      (11)
+#define STEPPER_1_EN      (10)
 #define STEPPER_1_STP     (23)
-#define STEPPER_1_DIR     (21)
+#define STEPPER_1_DIR     (25)
 
 #define EXTRUDER_CS  STEPPER_0_CS
 #define EXTRUDER_EN  STEPPER_0_EN
@@ -72,6 +71,8 @@ void __attribute__((weak)) setupPinModes() {
     pinMode(OPTO_I2, INPUT);
     pinMode(OPTO_I3, INPUT);
     pinMode(THERMISTOR, INPUT);
+    digitalWrite(STEPPER_0_CS, HIGH);
+    digitalWrite(STEPPER_1_CS, HIGH);
 }
 
 #endif /* end of include guard: PINS_H_RSOALORP */

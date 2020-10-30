@@ -32,18 +32,18 @@
 
 #define STEPPER_0_CS      (11)
 #define STEPPER_0_EN      (10)
-#define STEPPER_0_STP     (23)
-#define STEPPER_0_DIR     (21)
+#define STEPPER_0_STP     (25)
+#define STEPPER_0_DIR     (23)
 
 #define STEPPER_1_CS      (13)
 #define STEPPER_1_EN      (12)
 #define STEPPER_1_STP     (27)
-#define STEPPER_1_DIR     (25)
+#define STEPPER_1_DIR     (29)
 
-#define EXTRUDER_CS  STEPPER_0_CS
-#define EXTRUDER_EN  STEPPER_0_EN
-#define EXTRUDER_STP STEPPER_0_STP
-#define EXTRUDER_DIR STEPPER_0_DIR
+#define EXTRUDER_CS  STEPPER_1_CS
+#define EXTRUDER_EN  STEPPER_1_EN
+#define EXTRUDER_STP STEPPER_1_STP
+#define EXTRUDER_DIR STEPPER_1_DIR
 
 void __attribute__((weak)) setupPinModes() {
     // Handled by TMC2130Stepper::begin()

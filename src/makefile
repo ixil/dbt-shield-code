@@ -15,7 +15,8 @@ PROJECT_DIR       = $(shell dirname $(shell pwd))
 ARCHITECTURE  = avr
 BOARD_TAG    = mega
 BOARD_SUB    = atmega2560
-MONITOR_PORT  = /dev/ttyUSB*
+# MONITOR_PORT  = /dev/ttyUSB*
+MONITOR_PORT  = /dev/ttyACM*
 MONITOR_BAUDRATE  = 230400
 
 ARDUINO_LIBS = AutoPID TMCStepper  SPI SoftwareSerial TimerInterrupt

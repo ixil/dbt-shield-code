@@ -1,6 +1,10 @@
 #include <Arduino.h>
 #include "serialcommand.h"
+#include "controller.h"
 
+#ifndef MAX_EVEL
+#define MAX_EVEL 99999
+#endif
 void exec(char *cmdline)
 {
     char *command = strsep(&cmdline, " ");
@@ -44,17 +48,17 @@ void exec(char *cmdline)
         int number = atoi(strsep(&cmdline, " "));
         int value = atoi(cmdline);
         setPoint = value;
-        heaterOn = (bool)number;
+        heaterOn = !(bool)number;
     } else if (strcmp_P(command, PSTR("evel")) == 0){
         int number = atoi(strsep(&cmdline, " "));
         int value = atoi(cmdline);
-        if (value < -MAX_EVEL || value > MAX_EVEL) {
-            Serial.print(F("Error: Too large value."));
-            break;
-        } else {
+        // if (value < -MAX_EVEL || value > MAX_EVEL) {
+        //     Serial.print(F("Error: Too large value."));
+        //     return;
+        // } else {
             extruderTargetSpeed = value;
-        }
-        motorsEnabled = (bool)number;
+            if (number) {Controller::enableSteppers();}
+        // }
     } else if(strcmp_P(command, PSTR("load")) == 0){
         //TODO load filament 
     } else if(strcmp_P(command, PSTR("unload")) == 0){
