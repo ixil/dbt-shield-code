@@ -28,7 +28,7 @@ void setup() {
   extruderStepper.setup(); // after SPI
 
 
-  extruderInstance->enable();
+  extruderStepper.enable();
 
   therimstor.init();
   initPID();
@@ -38,6 +38,7 @@ void setup() {
 
 void errorCondition(){
   heaterOn = false;
+  extruderStepper.setTargetStepperSpeed(0.0);
   //TODO disable motor
   /* actually call the cmomands, don't wait for the loop */
 
