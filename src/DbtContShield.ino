@@ -1,35 +1,34 @@
-#include "stepper.h"
+#include "pins.h"
+#include "serial.h"
+#include "steppers.h"
+#include "pid.h"
 #include "interrupts.h"
+
+TMC2130Stepper *extruderDriver;
+Stepper *extruderInstance;
 
 void setup() {
   // put your setup code here, to run once:
-  setupStepperPins(); // Make stepper pins Outputs
-
-  // Steppers are active low
-  digitalWrite(STEPPER_0_EN, HIGH);
-  digitalWrite(STEPPER_1_EN, HIGH);
-  pinMode(5,OUTPUT);
-  pinMode(6,OUTPUT);
-  digitalWrite(5, LOW);
-  digitalWrite(6, LOW);
+  setupPinModes();
 
   Serial.begin(230400);
   while(!Serial);
   Serial.println("\nStart...");
-
   SPI.begin();
-  // tmc2130_init(STEPPER, current, steps_per_mm); 
-  // 1500 ma
-  tmc2130_init(STEPPER0, 80, 300.0);
-  tmc2130_init(STEPPER1, 80, 300.0);
 
-  digitalWrite(STEPPER_0_EN, HIGH);
-  digitalWrite(STEPPER_1_EN, HIGH);
+  extruderDriver = new TMC2130Stepper();
+  extruderInstance = new Stepper(EXTRUDER_EN, EXTRUDER_STP, EXTRUDER_DIR, *extruderDriver, false);
 
-  timerSetup();
+  extruderInstance->enable();
+
+  timersSetup();
 }
 
 void loop() {
+
+  void exec(char);
+  void processCom();
+
   static uint16_t reverseTime = millis();
   static uint16_t speedChangeTime = millis();
   static uint16_t diagTime = millis();

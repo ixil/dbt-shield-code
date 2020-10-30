@@ -120,11 +120,11 @@ void Stepper::setupStepperTimer4(){
 }
 
 void Stepper::disableStepper(){
-    digitalWrite(enablePin, HIGH);
+    digitalWrite(enablePin, LOW);
 }
 
 void Stepper::enableStepper(){
-    digitalWrite(enablePin, LOW);
+    digitalWrite(enablePin, HIGH);
 }
 
 void Stepper::setupPins(){

@@ -43,6 +43,7 @@
 #define EXTRUDER_CS  STEPPER_0_CS
 #define EXTRUDER_EN  STEPPER_0_EN
 #define EXTRUDER_STP STEPPER_0_STP
+#define EXTRUDER_DIR STEPPER_0_DIR
 
 void setupPinModes() {
     // Handled by TMC2130Stepper::begin()
@@ -72,8 +73,5 @@ void setupPinModes() {
     pinMode(OPTO_I3, INPUT);
     pinMode(THERMISTOR, INPUT);
 }
-
-
-
 
 #endif /* end of include guard: PINS_H_RSOALORP */

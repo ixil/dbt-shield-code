@@ -111,7 +111,3 @@ struct TMCDriverConfig {
 // timerSetup(); //TODO
 
 #endif /* STEPPER_H */
-
-
-
-
