@@ -14,6 +14,8 @@ void exec(char *cmdline)
             "awrite <pin> <value>: analogWrite()\r\n"
             "echo <value>: set echo off (0) or on (1)\r\n\n"
             "heater <number> <value>: 0/1 on/off   /   0-250C\r\n"
+            "extrude <number> <value>: 0/1 on/off  /  -3000-3000\r\n"
+            "evel <number> <value>: 0/1 on/off    /   -300-300\r\n"
             "load: load filament\r\n"
             "unload: unload filament\r\n"
             "temp: extruder temperature\r\n"
@@ -42,8 +44,17 @@ void exec(char *cmdline)
         int number = atoi(strsep(&cmdline, " "));
         int value = atoi(cmdline);
         setPoint = value;
-        if(number == 1) heaterOn = true;
-        else heaterOn = false;
+        heaterOn = (bool)number;
+    } else if (strcmp_P(command, PSTR("evel")) == 0){
+        int number = atoi(strsep(&cmdline, " "));
+        int value = atoi(cmdline);
+        if (value < -MAX_EVEL || value > MAX_EVEL) {
+            Serial.print(F("Error: Too large value."));
+            break;
+        } else {
+            extruderTargetSpeed = value;
+        }
+        motorsEnabled = (bool)number;
     } else if(strcmp_P(command, PSTR("load")) == 0){
         //TODO load filament 
     } else if(strcmp_P(command, PSTR("unload")) == 0){
