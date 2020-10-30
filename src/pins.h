@@ -38,7 +38,7 @@
 #define STEPPER_1_CS      (13)
 #define STEPPER_1_EN      (12)
 #define STEPPER_1_STP     (23)
-#define STEPPER_1_DIR     (25)
+#define STEPPER_1_DIR     (21)
 
 #define EXTRUDER_CS  STEPPER_0_CS
 #define EXTRUDER_EN  STEPPER_0_EN
