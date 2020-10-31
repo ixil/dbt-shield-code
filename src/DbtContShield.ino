@@ -17,8 +17,9 @@ bool motorsEnabled;
 double temperature;
 double setPoint, outputVal;
 bool heaterOn;
-volatile double extruderTargetSpeed;
+double extruderTargetSpeed = 1;
 bool speedUpdate;
+bool statusCheck=false;
  
 
 ISR(ADC_vect){ (*InterruptGlobals::ADCInterrupt)(); }
@@ -29,12 +30,27 @@ ISR(TIMER5_COMPA_vect){
 
 using namespace Controller;
 
+void printStatus(){
+  Serial.print("Inputs");
+  Serial.println(Controller::readOptoInputs(), BIN);
+  Serial.print(" ExtruderTargetSpeed set to: ");
+  Serial.print(extruderTargetSpeed);
+  Serial.println("mm/s");
+  Serial.print(" Heaters : ");
+  Serial.print(heaterOn);
+  Serial.print(" Motors: ");
+  Serial.print(motorsEnabled);
+  Serial.print(" speeds: ");
+  extruderStepper.printStatus();
+  Serial.println();
+}
+
 void setup() {
   // put your setup code here, to run once:
   setupPinModes();
   setupKillPins();
 
-  Serial.begin(230400);
+  Serial.begin(9600);
   while(!Serial);
   Serial.println("\nStart...");
   SPI.begin();
@@ -66,7 +82,7 @@ void poll(){
   pollControlPins();
   //FIXME only update on a change
   if (motorsEnabled){
-    Serial.println("e enabled");
+    /* Serial.println("e enabled"); */
     extruderStepper.enable();
   }
   else{
@@ -78,8 +94,12 @@ void poll(){
     extruderStepper.updateSpeed();
     speedUpdate=false;
   }
-  Serial.print("Target speed is currently: ");
-  Serial.println(extruderTargetSpeed);
+  if (statusCheck){
+    printStatus();
+    statusCheck=false;
+  }
+  /* Serial.print("Target speed is currently: "); */
+  /* Serial.println(extruderTargetSpeed); */
 }
 
 void loop() {
@@ -93,8 +113,9 @@ void loop() {
       Serial.print(" Open circuit!");
       [[fallthrough]]
     case TemperatureStatus::ShortCircuit:
-      Serial.print(temperature); Serial.println("C.");
-      Serial.print(" Short circuit!");
+        //FIXME renable
+      /* Serial.print(temperature); Serial.println("C."); */
+      /* Serial.print(" Short circuit!"); */ 
       [[fallthrough]]
     case TemperatureStatus::Error:
       // errorCondition(); //TODO uncomment once finished testing

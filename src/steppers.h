@@ -114,6 +114,7 @@ extern Stepper* extruderInstance;
       bool isEnabled();
       void setupTimers();
       void updateSpeed();
+      void printStatus();
 
       static void Stepper0ISR();
       static void Stepper1ISR();

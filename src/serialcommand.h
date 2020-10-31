@@ -6,9 +6,10 @@ static bool do_echo = true;
 extern double temperature;
 extern bool heaterOn;
 extern double setPoint;
-extern volatile double extruderTargetSpeed;
+extern double extruderTargetSpeed;
 extern bool speedUpdate;
 extern bool motorsEnabled;
+extern bool statusCheck;
 
 void exec(char);
 void processCom();

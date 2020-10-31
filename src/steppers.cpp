@@ -76,10 +76,11 @@ void Stepper::setDirection(Stepper::Direction dir){
 }
 
 void Stepper::changeDirection(){
-  if (direction == Direction::CW)
-    setDirection(Direction::CCW);
-  else
-    setDirection(Direction::CW);
+   changeStepper0Direction();
+  // if (direction == Direction::CW)
+  //   setDirection(Direction::CCW);
+  // else
+  //   setDirection(Direction::CW);
 }
 
 void Stepper::changeStepper0Direction(){
@@ -101,20 +102,23 @@ void Stepper::changeStepper1Direction(){
 }
 
 void Stepper::setTargetStepperSpeed(double speed){
-  if (speed <= 1.0){
+  if (speed > -1.0 && speed < 1.0){
     targetPulse = 0xFFFF;
     disable();
-  } else{
-    targetPulse = uint16_t((F_CPU * 2 /STEP_PRESCALER) / (double(speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
-    Serial.print("timer freq ");
-    Serial.print(uint16_t((F_CPU * 2 / STEP_PRESCALER) / (double(STEPS_PER_MM)) - 0.5));
+    Serial.println("Disabling stepper");
+  } else if( speed < 1){
+    targetPulse = uint16_t((F_CPU * 2 /STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+    if (direction == Direction::CW){ changeDirection(); }
+  } else {
+    targetPulse = uint16_t((F_CPU * 2 /STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+    if (direction == Direction::CCW){ changeDirection(); }
   }
-  Serial.print(" SPMM: ");
-  Serial.print(STEPS_PER_MM);
-  Serial.print(" speed: ");
-  Serial.println(speed);
+}
+
+void Stepper::printStatus(){
   Serial.print("Target pulse: ");
   Serial.println(targetPulse);
+
 }
 
 void Stepper::updateStepperTimer5(Stepper &st){
@@ -164,6 +168,7 @@ void Stepper::setupPins(){
   pinMode(enablePin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   disable();
+  Serial.println("Disabling stepper");
 }
 
 uint32_t Stepper::getDrvStatus(){

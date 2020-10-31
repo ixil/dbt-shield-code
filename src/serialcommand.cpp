@@ -23,6 +23,7 @@ void exec(char *cmdline)
             "load: load filament\r\n"
             "unload: unload filament\r\n"
             "temp: extruder temperature\r\n"
+            "stat: \r\n"
             ));
     } else if (strcmp_P(command, PSTR("mode")) == 0) {
         int pin = atoi(strsep(&cmdline, " "));
@@ -51,21 +52,19 @@ void exec(char *cmdline)
         heaterOn = !(bool)number;
     } else if (strcmp_P(command, PSTR("evel")) == 0){
         int number = atoi(strsep(&cmdline, " "));
-        int value = atoi(cmdline);
-        // if (value < -MAX_EVEL || value > MAX_EVEL) {
-        //     Serial.print(F("Error: Too large value."));
-        //     return;
-        // } else {
-            extruderTargetSpeed = value;
-            speedUpdate = true;
-            if (number) {Controller::enableSteppers();}
-        // }
+        float value = atof(cmdline);
+        // TODO guard on the values that won't fit inside a uint16_t
+        extruderTargetSpeed = value;
+        speedUpdate = true;
+        if (number) {Controller::enableSteppers();}
     } else if(strcmp_P(command, PSTR("load")) == 0){
-        //TODO load filament 
+        //TODO load filament
     } else if(strcmp_P(command, PSTR("unload")) == 0){
         //TODO unload filamnent
     } else if (strcmp_P(command, PSTR("temp")) == 0){
         Serial.println(temperature);
+    } else if (strcmp_P(command, PSTR("stat")) == 0){
+        ::statusCheck=true;
     } else {
         Serial.print(F("Error: Unknown command: "));
         Serial.println(command);

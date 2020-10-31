@@ -60,16 +60,16 @@ ADCAveragingFilter::~ADCAveragingFilter() {
 ADCStatus ADCAveragingFilter::getFilteredValue(uint12_t &averagedDecimatedValue) {
     if (isValid) {
         isValid = false;
-        Serial.print(" decimating: ");
-        Serial.print(getSum());
-        Serial.print(" averaging using ");
-        Serial.print(ADCAveragingFilter::AveragingSamples);
-        Serial.print(" oversamples ");
-        Serial.print(ADCAveragingFilter::OverSampler);
-        Serial.print("  bits ");
-        Serial.print(ADCAveragingFilter::ThermistorOverSampleBits);
-        Serial.print(" Total samples: ");
-        Serial.print(ADCAveragingFilter::FilterLength);
+        // Serial.print(" decimating: ");
+        // Serial.print(getSum());
+        // Serial.print(" averaging using ");
+        // Serial.print(ADCAveragingFilter::AveragingSamples);
+        // Serial.print(" oversamples ");
+        // Serial.print(ADCAveragingFilter::OverSampler);
+        // Serial.print("  bits ");
+        // Serial.print(ADCAveragingFilter::ThermistorOverSampleBits);
+        // Serial.print(" Total samples: ");
+        // Serial.print(ADCAveragingFilter::FilterLength);
         averagedDecimatedValue = (getSum() / ADCAveragingFilter::AveragingSamples) >> ADCAveragingFilter::ThermistorOverSampleBits;
         return ADCStatus::Success;
     } else {
@@ -158,9 +158,11 @@ uint16_t ADCAveragingFilter::getSum() const {
     uint16_t copy;
     // uint8_t tmp = SREG;
     // noInterrupts();
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+    // ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+    cli();
         copy=sum;
-    }
+    sei();
+    // }
     // SREG = tmp;
     return copy;
 }

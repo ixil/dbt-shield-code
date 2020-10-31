@@ -43,6 +43,7 @@ void disableSteppers(){
     const uint8_t portBits = digitalPinToBitMask(STEPPER_0_EN) | digitalPinToBitMask(STEPPER_1_EN);
     volatile uint8_t *out = portOutputRegister(port);
     *out |= portBits; // motors are ACTIVE LOW
+    Serial.print("Steppers disabled");
 }
 
 void enableHeater(){
@@ -69,6 +70,7 @@ void disableExtruder(){
     volatile uint8_t *out = portOutputRegister(port);
     *out |= portBit; // Extruders are ACTIVE LOW
     ::motorsEnabled = false;
+    Serial.print("Disabling extruder");
     ::extruderTargetSpeed = 0.0;
     ::speedUpdate = true;
 }
@@ -100,34 +102,30 @@ uint8_t readOptoInputs(){
   return  0xF & ~(((PINJ & 0x03)<<2) | (PINH & 0x03));
 }
 
-bool readHeaterBit(uint8_t optobyte){
+bool readHeaterBit(const uint8_t& optobyte){
   return optobyte & HEATER_DISABLE_BIT;
 }
 
-uint8_t readSpeedMode(uint8_t optobyte){
+uint8_t readSpeedMode(const uint8_t& optobyte){
   return (optobyte) & SPEED_BITS_MASK;
 }
 
-bool readStepperBit(uint8_t optobyte){
+bool readStepperBit(const uint8_t& optobyte){
   return optobyte & STEPPER_DISABLE_BIT;
 }
 
 /*! Disables both steppers, blocking interrupts, if the HEATER_DISABLE pin is high.*/
 void pollStepperDisable(){
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
-      const uint8_t inputs = readOptoInputs();
-      if (!readStepperBit(inputs)){
-            disableSteppers();
-        }
-    }
+  const uint8_t inputs = readOptoInputs();
+  if (!readStepperBit(inputs)){
+    disableSteppers();
+  }
 }
 /*! Disables the heater, blocking interrupts, if the HEATER_DISABLE pin is high.*/
 void pollHeaterDisable(){
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
       const uint8_t inputs = readOptoInputs();
       if (!readHeaterBit(inputs)){
         disableHeater();
-      }
     }
 }
 
@@ -136,7 +134,6 @@ void pollHeaterDisable(){
 /*! Disables the heater, blocking interrupts, if the HEATER_DISABLE pin is high.*/
 void pollDigitalInputs(){
     uint8_t bitCount, speedMode;
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
     const uint8_t inputs = readOptoInputs();
       // Opto outputs are active low, so flip the bits
         bool stepperdisable = readStepperBit(inputs);
@@ -145,7 +142,6 @@ void pollDigitalInputs(){
         if (stepperdisable) { disableExtruder(); }
         if (stepperdisable || heaterdisable) { return; }
     speedMode = readSpeedMode(inputs);
-    }
     switch (speedMode) {
         case 1:
             setExtruderTargetSpeed(5);
@@ -175,24 +171,9 @@ void setupControlTimers(){
     }
 }
 
-
 void pollControlPins() {
   pollDigitalInputs();
 // #ifdef NDEBUG
-// Serial.println("Inputs");
-   Serial.println(readOptoInputs(), BIN);
-   Serial.print(" ExtruderTargetSpeed set to: ");
-   Serial.print(::extruderTargetSpeed);
-   Serial.println("mm/s");
-   Serial.print(" Heaters : ");
-   Serial.print(::heaterOn);
-   Serial.println(readHeaterBit(readOptoInputs()));
-   Serial.print(" Motors: ");
-   Serial.print(::motorsEnabled);
-   Serial.println(readStepperBit(readOptoInputs()));
-   Serial.print(" speeds: ");
-   Serial.println(readSpeedMode(readOptoInputs()));
-   Serial.println();
 // #endif
 }
 }

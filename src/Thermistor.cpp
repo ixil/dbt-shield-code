@@ -38,14 +38,14 @@ TemperatureStatus Thermistor::readTemperature(double& temperature){
   }
   // Max Vin could be
   const int16_t Vref = ((1 << Globals::ADCSampleBits) - 1) <<  ADCAveragingFilter::ThermistorOverSampleBits;
-  Serial.print(" Vref: ");
-  Serial.print(Vref);
-  Serial.print("v, Vin: ");
-  Serial.println((int16_t)Vin);
-  Serial.println("v");
+  // Serial.print(" Vref: ");
+  // Serial.print(Vref);
+  // Serial.print("v, Vin: ");
+  // Serial.println((int16_t)Vin);
+  // Serial.println("v");
   const double denom = (double)(Vref - (int16_t)Vin);
   if (Vin == 0){
-    Serial.println(" Vin is 0.0 ");
+    // Serial.println(" Vin is 0.0 ");
     return TemperatureStatus::ShortCircuit;
 
   }
@@ -54,9 +54,9 @@ TemperatureStatus Thermistor::readTemperature(double& temperature){
     return TemperatureStatus::OpenCircuit;
   }
   const double resistance  =  Rseries * ((double)(Vin) / denom);
-  Serial.print(" resistance: ");
-  Serial.println(resistance);
-  Serial.flush();
+  // Serial.print(" resistance: ");
+  // Serial.println(resistance);
+  // Serial.flush();
   const double logR = log(resistance);
   const double recipT = shhA + shhB * logR + shhC * logR * logR * logR;
   temperature = (recipT > 0.0) ? (1.0/recipT) + ABS_ZERO : ErrorBadTemp;

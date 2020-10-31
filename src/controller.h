@@ -1,11 +1,12 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
+#include <Arduino.h>
 
 extern bool motorsEnabled;
 extern double temperature;
 extern double setPoint, outputVal;
 extern bool heaterOn;
-extern volatile double extruderTargetSpeed;
+extern double extruderTargetSpeed;
 extern bool speedUpdate;
 
 namespace Controller {
@@ -31,6 +32,8 @@ namespace Controller {
     void setupControlTimers();
 
     void setupKillPins();
+    void printControls();
+    uint8_t readOptoInputs();
 
     void timerISR(void);
 }

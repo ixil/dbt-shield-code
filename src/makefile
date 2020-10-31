@@ -17,15 +17,15 @@ BOARD_TAG    = mega
 BOARD_SUB    = atmega2560
 MONITOR_PORT  = /dev/ttyUSB*
 # MONITOR_PORT  = /dev/ttyACM*
-MONITOR_BAUDRATE  = 230400
+MONITOR_BAUDRATE  = 9600
 
 ARDUINO_LIBS = AutoPID TMCStepper  SPI SoftwareSerial TimerInterrupt
 
-CFLAGS_STD = -std=gnu11
-CXXFLAGS_STD += -std=gnu++11
+CFLAGS_STD = -std=gnu11 -O3
+CXXFLAGS_STD += -std=gnu++11 -O3
 CURRENT_DIR       = $(shell basename $(CURDIR))
 OBJDIR = $(PROJECT_DIR)/build/$(CURRENT_DIR)/$(BOARD_TAG)
 CXXFLAGS +=  -Wextra -Wall -pedantic
-LDFLAGS +=  -fdiagnostics-color
+LDFLAGS +=  -fdiagnostics-color -flto
 
 include $(ARDMK_DIR)/Arduino.mk
