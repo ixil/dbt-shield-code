@@ -61,6 +61,7 @@ inline struct TMCDriverConfig {
 
 class Stepper;
 extern Stepper* extruderInstance;
+extern Stepper* extruderInstance;
 
   class Stepper {
 
@@ -76,6 +77,7 @@ extern Stepper* extruderInstance;
       // unsigned long currentMicros;
 
       volatile bool speedChange = false;
+      bool zeroSpeed=true;
       uint16_t targetPulse = 0xFFFF;
       Direction direction = Direction::CW;
 
@@ -96,6 +98,7 @@ extern Stepper* extruderInstance;
       static void setupStepperTimer5();
       static void updateStepperTimer4(const Stepper &st);
       static void updateStepperTimer5(const Stepper &st);
+      void updateSpeed();
 
       public:
       // Following Quick configuration guide Page 81/103
@@ -113,7 +116,6 @@ extern Stepper* extruderInstance;
       bool stallStatus();
       bool isEnabled();
       void setupTimers();
-      void updateSpeed();
       void printStatus();
 
       static void Stepper0ISR();

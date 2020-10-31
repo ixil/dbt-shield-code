@@ -73,9 +73,6 @@ void disableExtruder(){
     *out |= portBit; // Extruders are ACTIVE LOW
     ::motorsEnabled = false;
     Serial.print("Disabling extruder");
-    cli();
-    ::extruderTargetSpeed = 0.0;
-    sei();
     ::speedUpdate = true;
 }
 

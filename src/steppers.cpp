@@ -99,20 +99,26 @@ void Stepper::changeStepper1Direction(){
 }
 
 void Stepper::setTargetStepperSpeed(const double& speed){
-  if (speed > -1.0 && speed < 1.0){
+  if (speed > -0.02 && speed < 0.02){
     targetPulse = 0xFFFF;
+    zeroSpeed=true;
     disable();
     Serial.println("Disabling stepper");
-  } else if( speed < 1){
-    cli();
-    targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
-    sei();
-    setDirection(Direction::CW);
+    return;
   } else {
-    cli();
-    targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
-    sei();
-    setDirection(Direction::CCW);
+    zeroSpeed = false;
+    if( speed < 1){
+      cli();
+      targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+      sei();
+      setDirection(Direction::CW);
+    } else {
+      cli();
+      targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+      sei();
+      setDirection(Direction::CCW);
+    }
+    updateSpeed();
   }
 }
 
@@ -122,18 +128,34 @@ void Stepper::printStatus(){
 
 }
 
+inline void disableStepperTimer4(){
+  TCCR4A &= ~bit(COM4A1);
+  TIMSK4 &= ~bit(OCIE4A) & ~bit(TOIE4);
+}
+
+inline void disableStepperTimer5(){
+  TCCR5A &= ~bit(COM5A1);
+  TIMSK5 &= ~bit(OCIE5A) & ~bit(TOIE5);
+  TCCR5C &= ~bit(FOC5A);
+}
+
 void Stepper::updateStepperTimer5(const Stepper &st){
-  // OCR5A = st.targetPulse;
-  OCR5AH = st.targetPulse >> 8;
-  OCR5AL = st.targetPulse & 0xFF;
+  cli();
+  TCCR5A = bit(COM5A1);
+  TIMSK5 = bit(OCIE5A);
+  OCR5A = st.targetPulse;
+  TCNT5 = 0xFFFF;
+  sei();
   st.printStatus();
   // order matters, High byte write first
 }
 
 void Stepper::updateStepperTimer4(const Stepper &st){
-  // OCR4B = st.targetPulse;
-  OCR4BH = st.targetPulse >> 8;
-  OCR4BL = st.targetPulse & 0xFF;
+  cli();
+  TIMSK4 = bit(OCIE4A);
+  OCR4B = st.targetPulse;
+  TCNT4 = 0xFFFF;
+  sei();
   st.printStatus();
   // order matters, High byte write first
 }
@@ -158,10 +180,15 @@ void Stepper::setupStepperTimer4(){
 }
 
 void Stepper::disable(){
+  disableStepperTimer5();
   digitalWrite(enablePin, HIGH);
 }
 
 void Stepper::enable(){
+  setupStepperTimer5();
+  if (zeroSpeed){
+    disableStepperTimer5();
+  }
   digitalWrite(enablePin, LOW);
 }
 
@@ -170,6 +197,7 @@ void Stepper::setupPins(){
   pinMode(stepPin, OUTPUT);
   pinMode(enablePin, OUTPUT);
   pinMode(dirPin, OUTPUT);
+  speedChange = false;
   disable();
   Serial.println("Disabling stepper");
 }

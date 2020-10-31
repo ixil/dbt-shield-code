@@ -13,7 +13,7 @@ Stepper extruderStepper = *extruderInstance;
 // ADC0 is pin 0
 Thermistor thermistor(0);
 
-bool motorsEnabled;
+bool motorsEnabled=false;
 double temperature;
 double setPoint, outputVal;
 bool heaterOn;
@@ -65,14 +65,14 @@ void setup() {
   extruderStepper.setTargetStepperSpeed(0);
   extruderStepper.setupTimers();
   Controller::enableExtruder();
-  extruderStepper.updateSpeed();
+  extruderStepper.setTargetStepperSpeed(0);
+  extruderStepper.disable();
   sei();
 }
 
 void errorCondition(){
   heaterOn = false;
   extruderStepper.setTargetStepperSpeed(0);
-  extruderStepper.updateSpeed();
   extruderStepper.disable();
   Serial.println("Error condition, Disabling");
 }
@@ -91,7 +91,6 @@ void poll(){
   }
   if (speedUpdate){
     extruderStepper.setTargetStepperSpeed(extruderTargetSpeed);
-    extruderStepper.updateSpeed();
     Serial.print("updated speed to: ");
     Serial.println(extruderTargetSpeed);
     speedUpdate=false;
