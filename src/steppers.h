@@ -94,8 +94,8 @@ extern Stepper* extruderInstance;
 
       static void setupStepperTimer4();
       static void setupStepperTimer5();
-      static void updateStepperTimer4(Stepper &st);
-      static void updateStepperTimer5(Stepper &st);
+      static void updateStepperTimer4(const Stepper &st);
+      static void updateStepperTimer5(const Stepper &st);
 
       public:
       // Following Quick configuration guide Page 81/103
@@ -105,7 +105,7 @@ extern Stepper* extruderInstance;
       void setup();
       void setDirection(Direction dir);
       void changeDirection();
-      void setTargetStepperSpeed(double speed);
+      void setTargetStepperSpeed(const double& speed);
       void disable();
       void enable();
       void setupPins();

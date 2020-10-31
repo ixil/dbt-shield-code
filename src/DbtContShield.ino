@@ -92,6 +92,8 @@ void poll(){
   if (speedUpdate){
     extruderStepper.setTargetStepperSpeed(extruderTargetSpeed);
     extruderStepper.updateSpeed();
+    Serial.print("updated speed to: ");
+    Serial.println(extruderTargetSpeed);
     speedUpdate=false;
   }
   if (statusCheck){

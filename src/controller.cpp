@@ -25,8 +25,10 @@ float calculateExtrudeSpeed(double flowrate) {
 void setExtruderTargetSpeed(float target) {
   Serial.print("Setting target speed:");
   Serial.println(target);
-    ::extruderTargetSpeed = target;
-    ::speedUpdate = true;
+  cli();
+  ::extruderTargetSpeed = target;
+  sei();
+  ::speedUpdate = true;
 }
 
 void enableSteppers(){
@@ -71,7 +73,9 @@ void disableExtruder(){
     *out |= portBit; // Extruders are ACTIVE LOW
     ::motorsEnabled = false;
     Serial.print("Disabling extruder");
+    cli();
     ::extruderTargetSpeed = 0.0;
+    sei();
     ::speedUpdate = true;
 }
 

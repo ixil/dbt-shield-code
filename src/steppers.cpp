@@ -101,16 +101,20 @@ void Stepper::changeStepper1Direction(){
   // TIMSK4 |= bit(OCIE4B) | bit(TOIE4); // reenable interrupt
 }
 
-void Stepper::setTargetStepperSpeed(double speed){
+void Stepper::setTargetStepperSpeed(const double& speed){
   if (speed > -1.0 && speed < 1.0){
     targetPulse = 0xFFFF;
     disable();
     Serial.println("Disabling stepper");
   } else if( speed < 1){
-    targetPulse = uint16_t((F_CPU * 2 /STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+    cli();
+    targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+    sei();
     if (direction == Direction::CW){ changeDirection(); }
   } else {
-    targetPulse = uint16_t((F_CPU * 2 /STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+    cli();
+    targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
+    sei();
     if (direction == Direction::CCW){ changeDirection(); }
   }
 }
@@ -121,18 +125,20 @@ void Stepper::printStatus(){
 
 }
 
-void Stepper::updateStepperTimer5(Stepper &st){
-  OCR5A = st.targetPulse;
+void Stepper::updateStepperTimer5(const Stepper &st){
+  // OCR5A = st.targetPulse;
+  OCR5AH = st.targetPulse >> 8;
+  OCR5AL = st.targetPulse & 0xFF;
+  st.printStatus();
   // order matters, High byte write first
-  // OCR5AH = targetPulse[0] >> 8;
-  // OCR5AL = targetPulse[0] & 0xFF;
 }
 
-void Stepper::updateStepperTimer4(Stepper &st){
-  OCR4B = st.targetPulse;
+void Stepper::updateStepperTimer4(const Stepper &st){
+  // OCR4B = st.targetPulse;
+  OCR4BH = st.targetPulse >> 8;
+  OCR4BL = st.targetPulse & 0xFF;
+  st.printStatus();
   // order matters, High byte write first
-  // OCR4BH = targetPulse[1] >> 8;
-  // OCR4BL = targetPulse[1] & 0xFF;
 }
 
 void Stepper::setupStepperTimer5(){
