@@ -61,8 +61,8 @@ void setup() {
   initPID();
 
   setupControlTimers();
-  /* // this is a hack to make the interrupts slow */
-  /* extruderStepper.setTargetStepperSpeed(1); */
+  // this is a hack to make the interrupts slow
+  extruderStepper.setTargetStepperSpeed(0);
   extruderStepper.setupTimers();
   Controller::enableExtruder();
   extruderStepper.updateSpeed();
@@ -71,9 +71,9 @@ void setup() {
 
 void errorCondition(){
   heaterOn = false;
-  extruderStepper.setTargetStepperSpeed(1.0);
+  extruderStepper.setTargetStepperSpeed(0);
   extruderStepper.updateSpeed();
-  // extruderStepper.disable();
+  extruderStepper.disable();
   Serial.println("Error condition, Disabling");
 }
 
@@ -117,7 +117,7 @@ void loop() {
     case TemperatureStatus::ShortCircuit:
         //FIXME renable
       /* Serial.print(temperature); Serial.println("C."); */
-      /* Serial.print(" Short circuit!"); */ 
+      /* Serial.print(" Short circuit!"); */
       [[fallthrough]]
     case TemperatureStatus::Error:
       // errorCondition(); //TODO uncomment once finished testing

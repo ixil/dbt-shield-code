@@ -70,17 +70,14 @@ void Stepper::tmc2130_init() {
 void Stepper::setDirection(Stepper::Direction dir){
   direction = dir;
   if (invertDir ^ (direction == Direction::CW))
-    digitalWrite(dirPin, HIGH);
+    STEP_PORT |= (1 << STEPPER0_DIR_BIT);
   else
-    digitalWrite(dirPin, LOW);
+    STEP_PORT &= ~(1 << STEPPER0_DIR_BIT);
 }
 
 void Stepper::changeDirection(){
-   changeStepper0Direction();
-  // if (direction == Direction::CW)
-  //   setDirection(Direction::CCW);
-  // else
-  //   setDirection(Direction::CW);
+  if (direction == Direction::CW) { setDirection(Direction::CCW); }
+  else{setDirection(Direction::CCW);}
 }
 
 void Stepper::changeStepper0Direction(){
@@ -110,12 +107,12 @@ void Stepper::setTargetStepperSpeed(const double& speed){
     cli();
     targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(-speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
     sei();
-    if (direction == Direction::CW){ changeDirection(); }
+    setDirection(Direction::CW);
   } else {
     cli();
     targetPulse = uint16_t((F_CPU/STEP_PRESCALER) / (double(speed) * STEPS_PER_MM) - 0.5); // round, and do 0 count offset
     sei();
-    if (direction == Direction::CCW){ changeDirection(); }
+    setDirection(Direction::CCW);
   }
 }
 
