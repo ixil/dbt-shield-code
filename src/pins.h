@@ -50,7 +50,7 @@
 #define STEPPER0_STP_BIT      0 // Match with STEP_PIN
 #define STEPPER1_STP_BIT      3 // Match with STEP_PIN
 #define STEPPER0_DIR_BIT      5 // Match with STEP_PIN
-#define STEPPER1_DIR_BIT      9 // Match with STEP_PIN
+#define STEPPER1_DIR_BIT      7 // Match with STEP_PIN
 
 void __attribute__((weak)) setupPinModes() {
     // Handled by TMC2130Stepper::begin()
