@@ -44,6 +44,14 @@
 #define EXTRUDER_STP STEPPER_0_STP
 #define EXTRUDER_DIR STEPPER_0_DIR
 
+// Using direct register manipulation can reach faster stepping times
+#define STEP_PORT PORTA // Match with STEP_PIN
+#define STEP_PIN PINA // Match with STEP_PIN
+#define STEPPER0_STP_BIT      0 // Match with STEP_PIN
+#define STEPPER1_STP_BIT      3 // Match with STEP_PIN
+#define STEPPER0_DIR_BIT      5 // Match with STEP_PIN
+#define STEPPER1_DIR_BIT      9 // Match with STEP_PIN
+
 void __attribute__((weak)) setupPinModes() {
     // Handled by TMC2130Stepper::begin()
     pinMode(STEPPER_0_CS, OUTPUT);

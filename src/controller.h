@@ -6,6 +6,7 @@ extern double temperature;
 extern double setPoint, outputVal;
 extern bool heaterOn;
 extern volatile double extruderTargetSpeed;
+extern bool speedUpdate;
 
 namespace Controller {
 

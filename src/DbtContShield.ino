@@ -7,8 +7,8 @@
 #include "interrupts.h"
 
 TMC2130Stepper extruderDriver(EXTRUDER_CS, STEPPER_R_SENSE, 0);
-Stepper extruderStepper(EXTRUDER_EN, EXTRUDER_STP, EXTRUDER_DIR, extruderDriver, false);
-Stepper* extruderInstance = &extruderStepper;
+Stepper* extruderInstance = new Stepper(EXTRUDER_EN, EXTRUDER_STP, EXTRUDER_DIR, extruderDriver, false);
+Stepper extruderStepper = *extruderInstance;
 
 // ADC0 is pin 0
 Thermistor thermistor(0);
@@ -24,7 +24,7 @@ bool speedUpdate;
 ISR(ADC_vect){ (*InterruptGlobals::ADCInterrupt)(); }
 
 ISR(TIMER5_COMPA_vect){
-  Stepper::StepperISR();
+  Stepper::Stepper0ISR();
 }
 
 using namespace Controller;
@@ -39,18 +39,24 @@ void setup() {
   Serial.println("\nStart...");
   SPI.begin();
 
+  cli();
   thermistor.init();
   extruderStepper.setup(); // after SPI
   initPID();
 
   setupControlTimers();
+  /* // this is a hack to make the interrupts slow */
+  /* extruderStepper.setTargetStepperSpeed(1); */
   extruderStepper.setupTimers();
   Controller::enableExtruder();
+  extruderStepper.updateSpeed();
+  sei();
 }
 
 void errorCondition(){
   heaterOn = false;
-  extruderStepper.setTargetStepperSpeed(0.0);
+  extruderStepper.setTargetStepperSpeed(1.0);
+  extruderStepper.updateSpeed();
   // extruderStepper.disable();
   Serial.println("Error condition, Disabling");
 }
@@ -67,7 +73,11 @@ void poll(){
     Serial.println("e disabled");
     extruderStepper.disable();
   }
-  extruderStepper.setTargetStepperSpeed(extruderTargetSpeed);
+  if (speedUpdate){
+    extruderStepper.setTargetStepperSpeed(extruderTargetSpeed);
+    extruderStepper.updateSpeed();
+    speedUpdate=false;
+  }
   Serial.print("Target speed is currently: ");
   Serial.println(extruderTargetSpeed);
 }
@@ -81,9 +91,11 @@ void loop() {
     case TemperatureStatus::OpenCircuit:
       Serial.print(temperature); Serial.println("C.");
       Serial.print(" Open circuit!");
+      [[fallthrough]]
     case TemperatureStatus::ShortCircuit:
       Serial.print(temperature); Serial.println("C.");
       Serial.print(" Short circuit!");
+      [[fallthrough]]
     case TemperatureStatus::Error:
       // errorCondition(); //TODO uncomment once finished testing
       break;

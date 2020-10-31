@@ -13,17 +13,17 @@ enum class ESTOP_TYPE { BRAKE, FREEWHEEL };
 constexpr ESTOP_TYPE ESTOP_TYPE = ESTOP_TYPE::FREEWHEEL;
 #define STEALTHCHOP true
 // #define HYBRID_THRESHOLD true
-#define MICROSTEPPING 16
+#define MICROSTEPPING 4
 
 #define MOTORSTEPS 200
 /* https://e3d-online.dozuki.com/Guide/Extruder+steps+per+mm/96 */
 #define GEAR_RATIO 3
 #define HOB_DIAMETER 7.3
-#define STEP_PRESCALER 256
+//The prescaler cannot be changed without modifying the CSXY bits setupStepperTimerX
+#define STEP_PRESCALER 8
 #ifndef F_CPU
 #define F_CPU 16000000UL
 #endif
-#define MAX_STEPPERIOD 16000000UL/STEP_PRESCALER*2
 constexpr double STEPS_PER_MM = MOTORSTEPS*MICROSTEPPING*GEAR_RATIO / (HOB_DIAMETER * PI);
 
 
@@ -52,10 +52,6 @@ inline struct TMCDriverConfig {
 /******************************************************************************/
 
 
-// Using direct register manipulation can reach faster stepping times
-#define STEP_PORT PORTA // Match with STEP_PIN
-#define STEPPER0_BIT_POS      0 // Match with STEP_PIN
-#define STEPPER1_BIT_POS      3 // Match with STEP_PIN
 
 #ifndef STEPPER_R_SENSE
 #define STEPPER_R_SENSE (0.11f)
@@ -80,7 +76,7 @@ extern Stepper* extruderInstance;
       // unsigned long currentMicros;
 
       volatile bool speedChange = false;
-      uint16_t targetPulse = 0;
+      uint16_t targetPulse = 0xFFFF;
       Direction direction = Direction::CW;
 
       bool invertDir = false;
@@ -98,8 +94,8 @@ extern Stepper* extruderInstance;
 
       static void setupStepperTimer4();
       static void setupStepperTimer5();
-      static void updateStepperTimer4(Stepper &stp);
-      static void updateStepperTimer5(Stepper &stp);
+      static void updateStepperTimer4(Stepper &st);
+      static void updateStepperTimer5(Stepper &st);
 
       public:
       // Following Quick configuration guide Page 81/103
@@ -117,8 +113,10 @@ extern Stepper* extruderInstance;
       bool stallStatus();
       bool isEnabled();
       void setupTimers();
+      void updateSpeed();
 
-      static void StepperISR();
+      static void Stepper0ISR();
+      static void Stepper1ISR();
 };
 
 // timerSetup(); //TODO

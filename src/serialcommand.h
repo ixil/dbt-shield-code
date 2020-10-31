@@ -7,6 +7,7 @@ extern double temperature;
 extern bool heaterOn;
 extern double setPoint;
 extern volatile double extruderTargetSpeed;
+extern bool speedUpdate;
 extern bool motorsEnabled;
 
 void exec(char);

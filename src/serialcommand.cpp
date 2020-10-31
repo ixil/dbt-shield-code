@@ -57,6 +57,7 @@ void exec(char *cmdline)
         //     return;
         // } else {
             extruderTargetSpeed = value;
+            speedUpdate = true;
             if (number) {Controller::enableSteppers();}
         // }
     } else if(strcmp_P(command, PSTR("load")) == 0){

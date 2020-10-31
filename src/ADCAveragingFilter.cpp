@@ -141,6 +141,7 @@ void ADCAveragingFilter::setupTriggeredADC(const ADCTriggerSource source, const 
     }
     if (!instance){
         Serial.print("instance not set correctly!");
+        Serial.flush();
         abort();
     }
     ADCSRB = (0x07 & static_cast<uint8_t>(source));

@@ -26,6 +26,7 @@ void setExtruderTargetSpeed(float target) {
   Serial.print("Setting target speed:");
   Serial.println(target);
     ::extruderTargetSpeed = target;
+    ::speedUpdate = true;
 }
 
 void enableSteppers(){
@@ -69,6 +70,7 @@ void disableExtruder(){
     *out |= portBit; // Extruders are ACTIVE LOW
     ::motorsEnabled = false;
     ::extruderTargetSpeed = 0.0;
+    ::speedUpdate = true;
 }
 
 void disableAllPWMs() {
@@ -168,6 +170,7 @@ void setupControlTimers(){
     if (ITimer3.attachInterruptInterval(5, timerISR)){
     } else{
         Serial.println("Timer3 failed to setup!");
+        Serial.flush();
         abort();
     }
 }
