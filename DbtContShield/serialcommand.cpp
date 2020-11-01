@@ -6,6 +6,24 @@
 #ifndef MAX_EVEL
 #define MAX_EVEL 99999
 #endif
+
+void printASCIIinfo() {
+  Serial.println("            hNNN-sNNN+            sMMMy           ");
+  Serial.println("            dMMM:yMMM+            sMMMy           ");
+  Serial.println("            dMMM:yMMM+            sMMMy           ");
+  Serial.println("   `-/osso+-dMMM:yMMMs:+ssssssssssmMMMmsss        ");
+  Serial.println(" `odMMMMMMMMMMMM:yMMMMMMMMMMMMMMNNMMMMMNNN`       ");
+  Serial.println(".mMMMds++sdMMMMM:yMMMMNy+/+yNMMMd-yMMMh...        ");
+  Serial.println("dMMMo`    `yMMMM:yMMMN-     -NMMM+sMMMy           ");
+  Serial.println("mMMM:      +MMMM-sMMMm`     `mMMMssMMMh      `hhhy");
+  Serial.println("/MMMNo-..:sNMMMh .NMMMd+-.-+dMMMN..NMMMh/-.-+mMMMo");
+  Serial.println(" /mMMMMNNMMMMNs`  .hMMMMNNNMMMMh-  .yMMMMNNNMMMm/ ");
+  Serial.println("   :sdNNMNmy/`      -ohmNMMmho-      .+ydmmdho-   ");
+  Serial.println("                                                  ");
+  Serial.println("                                                  ");
+  Serial.println("dbt-mini-shield firmware 1.0 by Oliver Harley, Andrea Perissinotto");
+}
+
 void exec(char *cmdline)
 {
     char *command = strsep(&cmdline, " ");
@@ -25,7 +43,8 @@ void exec(char *cmdline)
             "load: load filament\r\n"
             "unload: unload filament\r\n"
             "temp: extruder temperature\r\n"
-            "stat: \r\n"
+            "stat \r\n",
+            "info \r\n"
             ));
     } else if (strcmp_P(command, PSTR("mode")) == 0) {
         int pin = atoi(strsep(&cmdline, " "));
@@ -51,8 +70,7 @@ void exec(char *cmdline)
         int number = atoi(strsep(&cmdline, " "));
         int value = atoi(cmdline);
         setPoint = value;
-        if(number == 1) heaterOn = true;
-        else heaterOn = false;
+        heaterOn=number;
     } else if (strcmp_P(command, PSTR("evel")) == 0){
         int number = atoi(strsep(&cmdline, " "));
         float value = atof(cmdline);
@@ -82,11 +100,12 @@ void exec(char *cmdline)
         Serial.println(temperature);
     } else if (strcmp_P(command, PSTR("stat")) == 0){
         ::statusCheck=true;
-    } else {
+    } else if {
         Serial.print(F("Error: Unknown command: "));
         Serial.println(command);
+    } else if (strcmp_P(command, PSTR("info")) == 0){
+        printASCIIinfo();
     }
-}
 
 void processCom()
 {

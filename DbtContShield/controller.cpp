@@ -72,7 +72,7 @@ void disableExtruder(){
     cli();
     ::motorsEnabled = false;
     ::speedUpdate = false;
-    sei()
+    sei();
     // Serial.println("Disabling extruder");
 }
 
