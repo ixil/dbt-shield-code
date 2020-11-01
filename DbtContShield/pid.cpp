@@ -4,6 +4,7 @@
 AutoPID myPID(&temperature, &setPoint, &outputVal, OUTPUT_MIN, OUTPUT_MAX, KP, KI, KD);
 
 void runPID(){
+    motorsEnabled = motorsEnabled && myPID.atSetPoint(SETPOINT_THRESHOLD);
     if(heaterOn){
         myPID.run(); //call every loop, updates automatically at certain time interval
         digitalWrite(PWM6, outputVal);

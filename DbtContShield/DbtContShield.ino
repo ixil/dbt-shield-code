@@ -8,7 +8,6 @@
 
 
 #define TEMP_MIN_THRESHOLD 100
-#define SETPOINT_THRESHOLD 8
 
 TMC2130Stepper extruderDriver(EXTRUDER_CS, STEPPER_R_SENSE, 0);
 Stepper* extruderInstance = new Stepper(EXTRUDER_EN, EXTRUDER_STP, EXTRUDER_DIR, extruderDriver, false);
@@ -107,11 +106,9 @@ void pollThermistor(){
 void poll(){
   pollThermistor();
   pollControlPins();
-  motorsEnable &= !(temperature < TEMP_MIN_THRESHOLD);
-  motorsEnabled &= myPID.atSetPoint(SETPOINT_THRESHOLD);
-  //FIXME only update on a change
+  motorsEnabled = motorsEnabled && !(temperature < TEMP_MIN_THRESHOLD);
+  runPID();
   if (motorsEnabled){
-    /* Serial.println("e enabled"); */
     extruderStepper.enable();
   }
   else{
@@ -134,7 +131,6 @@ void poll(){
 
 void loop() {
   poll();
-  runPID();
   //Serial.println(temperature);
   processCom(); // Process the serial commands
   //digitalWrite(6, HIGH);

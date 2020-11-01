@@ -1,7 +1,8 @@
 #pragma once
 #include <AutoPID.h>
 
-#define TEMP_READ_DELAY 800 //can only read digital temp sensor every ~750ms
+#define SETPOINT_THRESHOLD 8
+
 //pid settings and gains
 
 #define KP .12
@@ -13,6 +14,7 @@
 
 extern double temperature, setPoint, outputVal;
 extern bool heaterOn;
+extern bool motorsEnabled;
 
 
 
