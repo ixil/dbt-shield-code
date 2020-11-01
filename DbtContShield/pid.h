@@ -1,7 +1,7 @@
 #pragma once
 #include <AutoPID.h>
 
-#define SETPOINT_THRESHOLD 8
+#define SETPOINT_THRESHOLD 15
 #define CONTROL_THRESHOLD 4
 
 //pid settings and gains
