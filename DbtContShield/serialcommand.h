@@ -7,7 +7,7 @@ extern double temperature;
 extern bool heaterOn;
 extern double setPoint;
 extern double extruderTargetSpeed;
-extern bool speedUpdate;
+extern volatile bool speedUpdate;
 extern bool motorsEnabled;
 extern bool statusCheck;
 

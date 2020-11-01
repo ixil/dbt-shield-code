@@ -57,8 +57,10 @@ void exec(char *cmdline)
         int number = atoi(strsep(&cmdline, " "));
         float value = atof(cmdline);
         // TODO guard on the values that won't fit inside a uint16_t
+        cli();
         extruderTargetSpeed = value;
         speedUpdate = true;
+        sei();
         if (number) {Controller::enableSteppers();}
     } else if(strcmp_P(command, PSTR("out0")) == 0){
         int value = atoi(cmdline);

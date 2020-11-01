@@ -25,8 +25,8 @@ void setExtruderTargetSpeed(float target) {
   // Serial.println(target);
   cli();
   ::extruderTargetSpeed = target;
-  sei();
   ::speedUpdate = true;
+  sei();
 }
 
 void enableSteppers(){
@@ -69,9 +69,11 @@ void disableExtruder(){
     const uint8_t portBit = digitalPinToBitMask(EXTRUDER_EN);
     volatile uint8_t *out = portOutputRegister(port);
     *out &= portBit; // Extruders are ACTIVE LOW
+    cli();
     ::motorsEnabled = false;
-    // Serial.println("Disabling extruder");
     ::speedUpdate = false;
+    sei()
+    // Serial.println("Disabling extruder");
 }
 
 void disableAllPWMs() {

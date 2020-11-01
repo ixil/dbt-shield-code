@@ -21,9 +21,9 @@ double temperature;
 double setPoint, outputVal;
 bool heaterOn;
 double extruderTargetSpeed = 1;
-bool speedUpdate;
-bool statusCheck=false;
-bool error=false;
+volatile bool speedUpdate;
+bool statusCheck = false;
+bool error = false;
  
 
 ISR(ADC_vect){ (*InterruptGlobals::ADCInterrupt)(); }
