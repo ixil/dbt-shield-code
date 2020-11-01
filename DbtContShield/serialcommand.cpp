@@ -71,7 +71,7 @@ void exec(char *cmdline)
     } else if(strcmp_P(command, PSTR("out2")) == 0){
         int value = atoi(cmdline);
         if(value == 1) digitalWrite(PWM7, HIGH);
-        else digitalWrite(PWM8, LOW);                
+        else digitalWrite(PWM8, LOW);
     } else if(strcmp_P(command, PSTR("load")) == 0){
         //TODO load filament
     } else if(strcmp_P(command, PSTR("unload")) == 0){
