@@ -27,6 +27,7 @@
 
 #define HEATER_PWM0_PIN 5
 #define HEATER_PWM1_PIN 6
+#define ALWAYS_ON_FAN PW9
 
 
 #define STEPPER_0_CS      (13)
@@ -82,6 +83,7 @@ void __attribute__((weak)) setupPinModes() {
     digitalWrite(STEPPER_0_CS, HIGH);
     digitalWrite(STEPPER_1_CS, HIGH);
     digitalWrite(THERMISTOR_ON, HIGH);
+    digitalWrite(ALWAYS_ON_FAN, HIGH);
 }
 
 #endif /* end of include guard: PINS_H_RSOALORP */
