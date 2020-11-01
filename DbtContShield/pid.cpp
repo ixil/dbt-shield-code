@@ -14,7 +14,7 @@ void runPID(){
 }
 
 void initPID(){
-    myPID.setBangBang(4);
+    myPID.setBangBang(CONTROL_THRESHOLD);
     //set PID update interval to 4000ms
     myPID.setTimeStep(PID_TIMEINTERVAL);
 }
