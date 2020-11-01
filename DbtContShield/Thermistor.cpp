@@ -31,7 +31,7 @@ TemperatureStatus Thermistor::readTemperature(double& temperature){
       return TemperatureStatus::NotReady;
       break;
     case ADCStatus::Idle:
-      Serial.println("idle");
+      Serial.println("Thermistor idle");
     case ADCStatus::Error:
       return TemperatureStatus::Error;
       break;

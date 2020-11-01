@@ -21,8 +21,8 @@ float calculateExtrudeSpeed(double flowrate) {
 
 /*! In mm/s */
 void setExtruderTargetSpeed(float target) {
-  Serial.print("Setting target speed:");
-  Serial.println(target);
+  // Serial.print("Setting target speed:");
+  // Serial.println(target);
   cli();
   ::extruderTargetSpeed = target;
   sei();
@@ -43,7 +43,7 @@ void disableSteppers(){
     const uint8_t portBits = digitalPinToBitMask(STEPPER_0_EN) | digitalPinToBitMask(STEPPER_1_EN);
     volatile uint8_t *out = portOutputRegister(port);
     *out |= portBits; // motors are ACTIVE LOW
-    Serial.println("Steppers disabled");
+    // Serial.println("Steppers disabled");
 }
 
 void enableHeater(){
@@ -70,7 +70,7 @@ void disableExtruder(){
     volatile uint8_t *out = portOutputRegister(port);
     *out &= portBit; // Extruders are ACTIVE LOW
     ::motorsEnabled = false;
-    Serial.println("Disabling extruder");
+    // Serial.println("Disabling extruder");
     ::speedUpdate = false;
 }
 

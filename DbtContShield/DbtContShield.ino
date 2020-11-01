@@ -88,12 +88,11 @@ void pollThermistor(){
       break;
     case TemperatureStatus::OpenCircuit:
       Serial.print(temperature); Serial.println("C.");
-      Serial.print(" Open circuit!");
+      Serial.print(" Thermistor Open circuit!");
       [[fallthrough]]
     case TemperatureStatus::ShortCircuit:
-        //FIXME renable
-      /* Serial.print(temperature); Serial.println("C."); */
-      /* Serial.print(" Short circuit!"); */
+      Serial.print(temperature); Serial.println("C.");
+      Serial.print(" Thermistor Short circuit!");
       [[fallthrough]]
     case TemperatureStatus::Error:
       errorCondition();
@@ -112,13 +111,13 @@ void poll(){
     extruderStepper.enable();
   }
   else{
-    Serial.println("e disabled");
+    // Serial.println("e disabled");
     extruderStepper.disable();
   }
   if (speedUpdate){
     extruderStepper.setTargetStepperSpeed(extruderTargetSpeed);
-    Serial.print("updated speed to: ");
-    Serial.println(extruderTargetSpeed);
+    // Serial.print("updated speed to: ");
+    // Serial.println(extruderTargetSpeed);
     speedUpdate=false;
   }
   if (statusCheck){

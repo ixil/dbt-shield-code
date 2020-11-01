@@ -8,8 +8,8 @@ void runPID(){
     if(heaterOn){
         myPID.run(); //call every loop, updates automatically at certain time interval
         digitalWrite(PWM6, outputVal);
-        Serial.print("OUTPUTVAL:");
-        Serial.println(outputVal);
+        // Serial.print("OUTPUTVAL:");
+        // Serial.println(outputVal);
     }
 }
 
