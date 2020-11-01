@@ -27,7 +27,7 @@
 
 #define HEATER_PWM0_PIN 5
 #define HEATER_PWM1_PIN 6
-#define ALWAYS_ON_FAN PW9
+#define ALWAYS_ON_FAN PWM9
 
 
 #define STEPPER_0_CS      (13)
