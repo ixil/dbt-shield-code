@@ -24,8 +24,7 @@ void printASCIIinfo() {
   Serial.println("dbt-mini-shield firmware 1.0 by Oliver Harley, Andrea Perissinotto");
 }
 
-void exec(char *cmdline)
-{
+void exec(char *cmdline) {
     char *command = strsep(&cmdline, " ");
 
     if (strcmp_P(command, PSTR("help")) == 0) {
@@ -100,15 +99,15 @@ void exec(char *cmdline)
         Serial.println(temperature);
     } else if (strcmp_P(command, PSTR("stat")) == 0){
         ::statusCheck=true;
-    } else if {
-        Serial.print(F("Error: Unknown command: "));
-        Serial.println(command);
     } else if (strcmp_P(command, PSTR("info")) == 0){
         printASCIIinfo();
+    } else {
+        Serial.print(F("Error: Unknown command: "));
+        Serial.println(command);
     }
+}
 
-void processCom()
-{
+void processCom() {
     /* Process incoming commands. */
     while (Serial.available()) {
         static char buffer[BUF_LENGTH];
