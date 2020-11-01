@@ -97,7 +97,7 @@ void pollThermistor(){
       [[fallthrough]]
     case TemperatureStatus::Error:
       errorCondition();
-      Serial.println("reset")
+      Serial.println("error");
       error=true;
       break;
     default:

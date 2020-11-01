@@ -146,7 +146,7 @@ void Stepper::updateStepperTimer5(const Stepper &st){
   OCR5A = st.targetPulse;
   TCNT5 = 0xFFFF;
   sei();
-  st.printStatus();
+  // st.printStatus();
   // order matters, High byte write first
 }
 
@@ -156,7 +156,7 @@ void Stepper::updateStepperTimer4(const Stepper &st){
   OCR4B = st.targetPulse;
   TCNT4 = 0xFFFF;
   sei();
-  st.printStatus();
+  // st.printStatus();
   // order matters, High byte write first
 }
 
