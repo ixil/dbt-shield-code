@@ -6,6 +6,10 @@
 #include "pid.h"
 #include "interrupts.h"
 
+
+#define TEMP_MIN_THRESHOLD 100
+#define SETPOINT_THRESHOLD 8
+
 TMC2130Stepper extruderDriver(EXTRUDER_CS, STEPPER_R_SENSE, 0);
 Stepper* extruderInstance = new Stepper(EXTRUDER_EN, EXTRUDER_STP, EXTRUDER_DIR, extruderDriver, false);
 Stepper extruderStepper = *extruderInstance;
@@ -103,6 +107,8 @@ void pollThermistor(){
 void poll(){
   pollThermistor();
   pollControlPins();
+  motorsEnable &= !(temperature < TEMP_MIN_THRESHOLD);
+  motorsEnabled &= myPID.atSetPoint(SETPOINT_THRESHOLD);
   //FIXME only update on a change
   if (motorsEnabled){
     /* Serial.println("e enabled"); */
@@ -129,8 +135,6 @@ void poll(){
 void loop() {
   poll();
   runPID();
-  if(heaterOn) Serial.println("heaterON");
-  if(!heaterOn) Serial.println("heaterOFF");
   //Serial.println(temperature);
   processCom(); // Process the serial commands
   //digitalWrite(6, HIGH);
