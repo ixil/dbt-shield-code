@@ -46,20 +46,21 @@ void printStatus(){
 }
 
 void setup() {
-  // put your setup code here, to run once:
-  setupPinModes();
-  setupKillPins();
-  Serial.begin(9600);
+  Serial.begin(115200);
+  SPI.begin();
   while(!Serial);
   Serial.println("\nStart...");
-  SPI.begin();
-
+  Serial.flush();
+  // put your setup code here, to run once:
   cli();
+  setupPinModes();
+  setupKillPins();
+
   thermistor.init();
   extruderStepper.setup(); // after SPI
   initPID();
 
-  setupControlTimers();
+  /* setupControlTimers(); */
   // this is a hack to make the interrupts slow
   extruderStepper.setTargetStepperSpeed(0);
   extruderStepper.setupTimers();

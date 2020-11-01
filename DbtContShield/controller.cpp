@@ -5,8 +5,6 @@
 #include "interrupts.h"
 #include "TimerInterrupt.h"
 
-/* ISR(ADC_vect){ ADCAveragingFilter::AveragingISRHandler(); }; */
-
 namespace Controller {
 
 /*! In mm^3/s */
@@ -45,7 +43,7 @@ void disableSteppers(){
     const uint8_t portBits = digitalPinToBitMask(STEPPER_0_EN) | digitalPinToBitMask(STEPPER_1_EN);
     volatile uint8_t *out = portOutputRegister(port);
     *out |= portBits; // motors are ACTIVE LOW
-    Serial.print("Steppers disabled");
+    Serial.println("Steppers disabled");
 }
 
 void enableHeater(){
@@ -70,9 +68,9 @@ void disableExtruder(){
     const uint8_t port = digitalPinToPort(EXTRUDER_EN);
     const uint8_t portBit = digitalPinToBitMask(EXTRUDER_EN);
     volatile uint8_t *out = portOutputRegister(port);
-    *out |= portBit; // Extruders are ACTIVE LOW
+    *out &= portBit; // Extruders are ACTIVE LOW
     ::motorsEnabled = false;
-    Serial.print("Disabling extruder");
+    Serial.println("Disabling extruder");
     ::speedUpdate = true;
 }
 
@@ -117,14 +115,14 @@ bool readStepperBit(const uint8_t& optobyte){
 /*! Disables both steppers, blocking interrupts, if the HEATER_DISABLE pin is high.*/
 void pollStepperDisable(){
   const uint8_t inputs = readOptoInputs();
-  if (!readStepperBit(inputs)){
+  if (readStepperBit(inputs)){
     disableSteppers();
   }
 }
 /*! Disables the heater, blocking interrupts, if the HEATER_DISABLE pin is high.*/
 void pollHeaterDisable(){
   const uint8_t inputs = readOptoInputs();
-  if (!readHeaterBit(inputs)){
+  if (readHeaterBit(inputs)){
     disableHeater();
   }
 }
@@ -133,9 +131,8 @@ void pollHeaterDisable(){
 void pollDigitalInputs(){
     uint8_t bitCount, speedMode;
     const uint8_t inputs = readOptoInputs();
-    // Opto outputs are active low, so flip the bits
-    bool stepperdisable = !readStepperBit(inputs);
-    bool heaterdisable = !readHeaterBit(inputs);
+    bool stepperdisable = readStepperBit(inputs);
+    bool heaterdisable = readHeaterBit(inputs);
     if (heaterdisable) { disableHeater(); }
     if (stepperdisable) { disableExtruder(); }
     if (stepperdisable || heaterdisable) { return; }
@@ -160,7 +157,7 @@ void timerISR(void){
 }
 
 void setupControlTimers(){
-    /* ITimer3.init(); */
+    ITimer3.init();
     if (ITimer3.attachInterruptInterval(5, timerISR)){
     } else{
         Serial.println("Timer3 failed to setup!");
@@ -171,7 +168,5 @@ void setupControlTimers(){
 
 void pollControlPins() {
   pollDigitalInputs();
-// #ifdef NDEBUG
-// #endif
 }
 }
