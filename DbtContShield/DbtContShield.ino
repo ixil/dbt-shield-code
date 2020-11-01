@@ -74,7 +74,7 @@ void setup() {
 }
 
 void errorCondition(){
-  //heaterOn = false;
+  heaterOn = false;
   extruderStepper.setTargetStepperSpeed(0);
   extruderStepper.disable();
   Serial.println("Error condition, Disabling");
@@ -96,7 +96,7 @@ void pollThermistor(){
       /* Serial.print(" Short circuit!"); */
       [[fallthrough]]
     case TemperatureStatus::Error:
-      // errorCondition(); //TODO uncomment once finished testing
+      errorCondition();
       break;
     default:
       break;
