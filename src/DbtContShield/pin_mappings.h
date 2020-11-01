@@ -47,3 +47,4 @@ static_assert((dbt_AUX_IS_MOTOR && dbt_AUX_IS_INPUT), "Only specify dbt_MOTOR_AU
 // #endif
 
 #endif
+

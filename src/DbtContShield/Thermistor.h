@@ -28,8 +28,8 @@ class Thermistor {
         ADCAveragingFilter filter;
         inline static constexpr double ErrorBadTemp = 99999.99;
 
-        // const float Rseries = 10000;
-        const float Rseries = 4700;
+        const float Rseries = 10000;
+        //const float Rseries = 4700;
 
         // Semitech 104NT-4-R025H42G (recommend B4267)
         // Beta and C taken from https://wiki.e3d-online.com/E3D-v6_Assembly#Configure_Firmware_.28Easy.21.29
