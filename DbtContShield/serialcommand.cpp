@@ -43,7 +43,7 @@ void exec(char *cmdline)
             "load: load filament\r\n"
             "unload: unload filament\r\n"
             "temp: extruder temperature\r\n"
-            "stat \r\n",
+            "stat \r\n"
             "info \r\n"
             ));
     } else if (strcmp_P(command, PSTR("mode")) == 0) {
