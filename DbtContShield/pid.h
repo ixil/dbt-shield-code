@@ -21,4 +21,5 @@ extern bool motorsEnabled;
 
 void initPID();
 void runPID();
+void stopPID();
 

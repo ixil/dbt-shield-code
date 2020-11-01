@@ -19,3 +19,6 @@ void initPID(){
     myPID.setTimeStep(PID_TIMEINTERVAL);
 }
 
+void stopPID(){
+    myPID.stop();
+}

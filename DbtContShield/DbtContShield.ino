@@ -23,6 +23,7 @@ bool heaterOn;
 double extruderTargetSpeed = 1;
 bool speedUpdate;
 bool statusCheck=false;
+bool error=false;
  
 
 ISR(ADC_vect){ (*InterruptGlobals::ADCInterrupt)(); }
@@ -88,14 +89,16 @@ void pollThermistor(){
       break;
     case TemperatureStatus::OpenCircuit:
       Serial.print(temperature); Serial.println("C.");
-      Serial.print(" Thermistor Open circuit!");
+      Serial.println(" Thermistor Open circuit!");
       [[fallthrough]]
     case TemperatureStatus::ShortCircuit:
       Serial.print(temperature); Serial.println("C.");
-      Serial.print(" Thermistor Short circuit!");
+      Serial.println(" Thermistor Short circuit!");
       [[fallthrough]]
     case TemperatureStatus::Error:
       errorCondition();
+      Serial.println("reset")
+      error=true;
       break;
     default:
       break;
@@ -104,6 +107,10 @@ void pollThermistor(){
 
 void poll(){
   pollThermistor();
+  if (error) {
+    stopPID();
+    return;
+  }
   pollControlPins();
   motorsEnabled = motorsEnabled && !(temperature < TEMP_MIN_THRESHOLD);
   runPID();
@@ -131,7 +138,10 @@ void poll(){
 void loop() {
   poll();
   //Serial.println(temperature);
-  processCom(); // Process the serial commands
+  // if error, ignore reading serial
+  if (!error) {
+    processCom(); // Process the serial commands
+  }
   //digitalWrite(6, HIGH);
   Serial.flush();
 }
