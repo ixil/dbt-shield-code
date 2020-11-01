@@ -49,7 +49,6 @@ void setup() {
   // put your setup code here, to run once:
   setupPinModes();
   setupKillPins();
-
   Serial.begin(9600);
   while(!Serial);
   Serial.println("\nStart...");
@@ -71,7 +70,7 @@ void setup() {
 }
 
 void errorCondition(){
-  heaterOn = false;
+  //heaterOn = false;
   extruderStepper.setTargetStepperSpeed(0);
   extruderStepper.disable();
   Serial.println("Error condition, Disabling");
@@ -79,7 +78,7 @@ void errorCondition(){
 
 void poll(){
   thermistor.run();
-  pollControlPins();
+  //pollControlPins();
   //FIXME only update on a change
   if (motorsEnabled){
     /* Serial.println("e enabled"); */
@@ -125,9 +124,12 @@ void loop() {
       break;
   }
   runPID();
-
+  if(heaterOn) Serial.println("heaterON");
+  if(!heaterOn) Serial.println("heaterOFF");
+  //Serial.println(temperature); 
   processCom(); // Process the serial commands
-  poll();
+  // poll();
+  //digitalWrite(6, HIGH);
   Serial.flush();
 
   // static uint16_t reverseTime = millis();

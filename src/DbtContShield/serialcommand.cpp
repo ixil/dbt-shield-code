@@ -1,6 +1,11 @@
 #include <Arduino.h>
-#include "Serial.h"
+#include "serialcommand.h"
+#include "controller.h"
+#include "pins.h"
 
+#ifndef MAX_EVEL
+#define MAX_EVEL 99999
+#endif
 void exec(char *cmdline)
 {
     char *command = strsep(&cmdline, " ");
@@ -12,11 +17,15 @@ void exec(char *cmdline)
             "aread <pin>: analogRead()\r\n"
             "write <pin> <value>: digitalWrite()\r\n"
             "awrite <pin> <value>: analogWrite()\r\n"
-            "echo <value>: set echo off (0) or on (1)\r\n\n"
+            //"echo <value>: set echo off (0) or on (1)\r\n\n"
             "heater <number> <value>: 0/1 on/off   /   0-250C\r\n"
+            "efan <value>: 0/1 on/off       / extruder fan \r\n"
+            "extrude <number> <value>: 0/1 on/off  /  -3000-3000\r\n"
+            "evel <number> <value>: 0/1 on/off    /   -300-300\r\n"
             "load: load filament\r\n"
             "unload: unload filament\r\n"
             "temp: extruder temperature\r\n"
+            "stat: \r\n"
             ));
     } else if (strcmp_P(command, PSTR("mode")) == 0) {
         int pin = atoi(strsep(&cmdline, " "));
@@ -42,14 +51,35 @@ void exec(char *cmdline)
         int number = atoi(strsep(&cmdline, " "));
         int value = atoi(cmdline);
         setPoint = value;
-        if(number = 1) heaterOn = true;
+        if(number == 1) heaterOn = true;
         else heaterOn = false;
+    } else if (strcmp_P(command, PSTR("evel")) == 0){
+        int number = atoi(strsep(&cmdline, " "));
+        float value = atof(cmdline);
+        // TODO guard on the values that won't fit inside a uint16_t
+        extruderTargetSpeed = value;
+        speedUpdate = true;
+        if (number) {Controller::enableSteppers();}
+    } else if(strcmp_P(command, PSTR("out0")) == 0){
+        int value = atoi(cmdline);
+        if(value == 1) digitalWrite(PWM9, HIGH);
+        else digitalWrite(PWM9, LOW);
+    } else if(strcmp_P(command, PSTR("out1")) == 0){
+        int value = atoi(cmdline);
+        if(value == 1) digitalWrite(PWM8, HIGH);
+        else digitalWrite(PWM8, LOW);
+    } else if(strcmp_P(command, PSTR("out2")) == 0){
+        int value = atoi(cmdline);
+        if(value == 1) digitalWrite(PWM7, HIGH);
+        else digitalWrite(PWM8, LOW);                
     } else if(strcmp_P(command, PSTR("load")) == 0){
-        //TODO load filament 
+        //TODO load filament
     } else if(strcmp_P(command, PSTR("unload")) == 0){
         //TODO unload filamnent
     } else if (strcmp_P(command, PSTR("temp")) == 0){
         Serial.println(temperature);
+    } else if (strcmp_P(command, PSTR("stat")) == 0){
+        ::statusCheck=true;
     } else {
         Serial.print(F("Error: Unknown command: "));
         Serial.println(command);

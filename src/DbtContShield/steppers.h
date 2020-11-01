@@ -38,7 +38,7 @@ inline struct TMCDriverConfig {
   const float threshold          = 0.1f; // TODO
   const bool interpolate         = true;
   const bool dedge               = true;
-  const uint16_t mA              = 900;
+  const uint16_t mA              = 100;
   const float spmm               = 800; // TODO
 } TMCStepperConfig;
 

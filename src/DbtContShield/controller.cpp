@@ -50,11 +50,12 @@ void disableSteppers(){
 
 void enableHeater(){
     ::heaterOn = true;
+    digitalWrite(PWM6, HIGH);
 }
 
 void disableHeater(){
     digitalWrite(PWM5, LOW);
-    digitalWrite(PWM6, LOW);
+    //digitalWrite(PWM6, LOW);
     ::heaterOn = false;
 }
 
@@ -104,7 +105,8 @@ uint8_t readOptoInputs(){
 }
 
 bool readHeaterBit(const uint8_t& optobyte){
-  return optobyte & HEATER_DISABLE_BIT;
+  //return optobyte & HEATER_DISABLE_BIT;
+
 }
 
 uint8_t readSpeedMode(const uint8_t& optobyte){
@@ -124,10 +126,10 @@ void pollStepperDisable(){
 }
 /*! Disables the heater, blocking interrupts, if the HEATER_DISABLE pin is high.*/
 void pollHeaterDisable(){
-      const uint8_t inputs = readOptoInputs();
+/*       const uint8_t inputs = readOptoInputs();
       if (!readHeaterBit(inputs)){
-        disableHeater();
-    }
+        //disableHeater();
+    } */
 }
 
 
@@ -137,11 +139,11 @@ void pollDigitalInputs(){
     uint8_t bitCount, speedMode;
     const uint8_t inputs = readOptoInputs();
       // Opto outputs are active low, so flip the bits
-        bool stepperdisable = readStepperBit(inputs);
-        bool heaterdisable = readHeaterBit(inputs);
-        if (heaterdisable) { disableHeater(); }
-        if (stepperdisable) { disableExtruder(); }
-        if (stepperdisable || heaterdisable) { return; }
+        //bool stepperdisable = readStepperBit(inputs);
+        //bool heaterdisable = readHeaterBit(inputs);
+        //if (heaterdisable) { disableHeater(); }
+        //if (stepperdisable) { disableExtruder(); }
+        //if (stepperdisable || heaterdisable) { return; }
     speedMode = readSpeedMode(inputs);
     switch (speedMode) {
         case 1:
