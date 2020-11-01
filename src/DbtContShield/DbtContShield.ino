@@ -76,9 +76,32 @@ void errorCondition(){
   Serial.println("Error condition, Disabling");
 }
 
-void poll(){
+void pollThermistor(){
   thermistor.run();
-  //pollControlPins();
+  TemperatureStatus tstat = thermistor.readTemperature(temperature);
+  switch (tstat) {
+    case TemperatureStatus::NotReady:
+      break;
+    case TemperatureStatus::OpenCircuit:
+      Serial.print(temperature); Serial.println("C.");
+      Serial.print(" Open circuit!");
+      [[fallthrough]]
+    case TemperatureStatus::ShortCircuit:
+        //FIXME renable
+      /* Serial.print(temperature); Serial.println("C."); */
+      /* Serial.print(" Short circuit!"); */
+      [[fallthrough]]
+    case TemperatureStatus::Error:
+      // errorCondition(); //TODO uncomment once finished testing
+      break;
+    default:
+      break;
+  }
+}
+
+void poll(){
+  pollThermistor();
+  pollControlPins();
   //FIXME only update on a change
   if (motorsEnabled){
     /* Serial.println("e enabled"); */
@@ -103,69 +126,13 @@ void poll(){
 }
 
 void loop() {
-  thermistor.run();
-  TemperatureStatus tstat = thermistor.readTemperature(temperature);
-  switch (tstat) {
-    case TemperatureStatus::NotReady:
-      break;
-    case TemperatureStatus::OpenCircuit:
-      Serial.print(temperature); Serial.println("C.");
-      Serial.print(" Open circuit!");
-      [[fallthrough]]
-    case TemperatureStatus::ShortCircuit:
-        //FIXME renable
-      /* Serial.print(temperature); Serial.println("C."); */
-      /* Serial.print(" Short circuit!"); */
-      [[fallthrough]]
-    case TemperatureStatus::Error:
-      // errorCondition(); //TODO uncomment once finished testing
-      break;
-    default:
-      break;
-  }
+  poll();
   runPID();
   if(heaterOn) Serial.println("heaterON");
   if(!heaterOn) Serial.println("heaterOFF");
-  //Serial.println(temperature); 
+  //Serial.println(temperature);
   processCom(); // Process the serial commands
-  // poll();
   //digitalWrite(6, HIGH);
   Serial.flush();
-
-  // static uint16_t reverseTime = millis();
-  // static uint16_t speedChangeTime = millis();
-  // static uint16_t diagTime = millis();
-  // /* currentMicros = micros(); */
-  // currentMillis = millis();
-  // /* Serial.print("."); */
-
-  // if((currentMillis - speedChangeTime) > 500) {
-  //   diagTime = millis();
-  //   Serial.print("drv_err: "); Serial.println(STEPPER0.drv_err());
-  //   Serial.print("uv_cp: "); Serial.println(STEPPER0.uv_cp());
-  //   bool isEnabled();
-  //   STEPPER0.push();
-  //   Serial.print("is enabled: "); Serial.println(STEPPER0.isEnabled());
-  //   Serial.print("DRV_STATUS: "); Serial.println(STEPPER0.DRV_STATUS(), HEX);
-  //   Serial.print(targetPulse[0]);
-  // }
-
-  // if((currentMillis - speedChangeTime) > 500) {
-  //   speedChangeTime = millis();
-  //   Serial.print("\nspeeding up ...");
-  //   Serial.print(targetPulse[0]);
-  //   targetPulse[0] -= 100;
-  //   speedChange[0]=true; speedChange[1]=true;
-  // }
-
-
-  // if((currentMillis - last_time) > 100000) {
-  //   reverseTime = millis();
-  //   Serial.println("\nlets reverse...");
-  //   extruderStepper.changeDirection();
-  //   /* changeStepper1Direction(); */
-  //   last_time = millis();
-  // }
-
 }
 
