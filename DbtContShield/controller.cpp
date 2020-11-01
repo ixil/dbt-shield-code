@@ -150,6 +150,7 @@ void pollDigitalInputs(){
         default:
             break;
     }
+    ::motorsEnabled = true;
 }
 
 void timerISR(void){
@@ -169,4 +170,5 @@ void setupControlTimers(){
 void pollControlPins() {
   pollDigitalInputs();
 }
+
 }
